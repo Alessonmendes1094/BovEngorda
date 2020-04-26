@@ -1,0 +1,61 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    background-image: url("/img/farm.jpg");
+
+    background-size: cover;
+}
+
+
+html,
+body,
+.login-box {
+    height: 100%;
+}
+
+.logo-box {
+    margin-top: 10px;
+    height: 10%;
+}
+
+
+@media (max-width: 600px) {
+    .card-login {
+        position: absolute;
+        left: 10%;
+        right: 10%;
+    }
+
+    .image-logo {
+        width: 50%;
+    }
+}
+
+@media (min-width: 600px) {
+    .card-login {
+        position: absolute;
+        left: 30%;
+        right: 30%;
+    }
+
+    .image-logo {
+        width: 30%;
+    }
+}
+
+.btnsubmit {
+    color: white;
+}
+
+@media (min-width: 1300px) {
+    .card-login {
+        position: absolute;
+        left: 40%;
+        right: 40%;
+    }
+
+    .image-logo {
+        width: 15%;
+    }
+}
+

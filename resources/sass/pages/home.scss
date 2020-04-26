@@ -1,0 +1,36 @@
+$blue-dark: #0d47a1;
+$grey-background: #918f90;
+
+.container-modulos{
+    background-color: #FFF;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+
+
+    .modulo{
+        text-decoration: none;
+        color: $grey-background;
+        border-bottom: 3px solid #FFF;
+        padding: 20px 30px 20px 30px;
+        font-size: 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modulo:hover{
+        transition-duration: 0.3s;
+        background-color: $grey-background;
+        border-bottom: 3px solid $blue-dark;
+        color: white;
+    }
+
+    .modulo.active{
+        color: #111111;
+        border-bottom: 3px solid $blue-dark;
+    }
+}
