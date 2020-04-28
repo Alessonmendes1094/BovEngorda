@@ -7,12 +7,7 @@
                 <div class="card-content">
                     <span class="card-title">Lotes Cadastrados</span>
                     <div class="row">
-                        @if(Session::has('erro'))
-                            <div class="card-panel red lighten-1">
-                                {{session::get('erro')}}
-
-                            </div>
-                        @endif
+                        
                         <div class="col s12 right">
                             <a class="btn green white-text right"
                                href="{{route('lote.showFormLote')}}"><i

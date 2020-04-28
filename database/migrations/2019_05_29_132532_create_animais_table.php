@@ -23,7 +23,6 @@ class CreateAnimaisTable extends Migration
             $table->unsignedBigInteger('id_raca')->nullable();
             $table->unsignedBigInteger('id_tipobaixa')->nullable();
             $table->unsignedBigInteger('id_fornecedor')->nullable();
-            $table->unsignedBigInteger('id_manejo_compra')->nullable();
 
             $table->timestamps();
 
@@ -31,7 +30,6 @@ class CreateAnimaisTable extends Migration
             $table->foreign('id_raca')->references('id')->on('racas')->onDelete('set null');
             $table->foreign('id_tipobaixa')->references('id')->on('tipobaixas')->onDelete('set null');
             $table->foreign('id_fornecedor')->references('id')->on('fornecedores')->onDelete('set null');
-            $table->foreign('id_manejo_compra')->references('id')->on('manejos')->onDelete('set null');
         });
     }
 

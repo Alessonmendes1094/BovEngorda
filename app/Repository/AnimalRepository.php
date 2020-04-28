@@ -175,4 +175,21 @@ class AnimalRepository
     {
         return Animal::where('brinco', '=', $brinco)->first();
     }
+
+    public function validacaoAnimal(Request $request){
+        $dados = $request->all();
+        
+        //Validação Formulário
+        $valid = [
+            'brinco' => 'required|unique:animais|min:0|max:5',
+            'peso'       => 'required|numeric|min:1|max:1100',
+        ];
+        $messages = [
+            'unique' => 'Brinco já cadastrado, verifique!',
+            'required' => 'O campo é de preenchimento obrigatório!',
+            'min'      => 'Valor menor que o permitido!',
+            'max'      => 'Valor maior que o permitido!',
+        ];
+        $validacao = Validator($dados, $valid, $messages)->validate();
+    }
 }

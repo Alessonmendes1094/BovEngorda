@@ -1,47 +1,59 @@
 @section('li')
-    <li><a href="{{route('home')}}" class="modulo {{ (request()->is('/'))  ? 'active' : '' }} ">
+    <li><a href="{{route('home')}}" class=" tab modulo {{ (request()->is('/'))  ? 'active' : '' }} ">
             <i class="material-icons left">home</i>
             <span>Painel</span>
         </a>
     </li>
     <li><a href="{{route('fornecedor.index')}}"
-           class=" {{ (request()->is('tabelas/*'))  ? 'active' : '' }} ">
+           class="tab {{ (request()->is('tabelas/*'))  ? 'active' : '' }} ">
             <i class="material-icons left">table_chart</i>
             <span>Tabelas</span>
         </a>
     </li>
     <li><a href="{{route('animal.index')}}"
-           class=" {{ (request()->is('animais') or request()->is('animais/*'))  ? 'active' : '' }} ">
+           class="tab {{ (request()->is('animais') or request()->is('animais/*'))  ? 'active' : '' }} ">
             <i class="material-icons left">folder_open</i>
             <span>Animais</span>
         </a>
     </li>
     <li><a href="{{route('pesagem.index')}}"
-           class="modulo {{ (request()->is('pesagem') or request()->is('pesagem/*'))  ? 'active' : '' }} ">
+           class="tab modulo {{ (request()->is('pesagem') or request()->is('pesagem/*'))  ? 'active' : '' }} ">
             <i class="material-icons left">fitness_center</i>
             <span>Pesagem</span>
         </a>
     </li>
-    <li>
-        <a href="{{route('manejo.index')}}"
-           class="modulo {{ (request()->is('manejo') or request()->is('manejo/*'))  ? 'active' : '' }} ">
-            <i class="material-icons left">repeat</i>
-            <span>Manejo</span>
-        </a>
-    </li>
+    <li><a class="tab" href="{{route('compra.index')}}">
+        <i class="material-icons left">add_shopping_cart</i>
+        <span>Comprar Animais</span>
+    </a>
+   </li>
+   <li><a class="tab" href="{{route('venda.index')}}">
+    <i class="material-icons left">local_grocery_store</i>
+    <span>Vendar Animais</span>
+</a>
+</li>
     <li>
         <a href="{{route('financeiro.index')}}"
-           class="modulo {{ (request()->is('financeiro') or request()->is('financeiro/*'))  ? 'active' : '' }} ">
+           class="tab modulo {{ (request()->is('financeiro') or request()->is('financeiro/*'))  ? 'active' : '' }} ">
             <i class="material-icons left">attach_money</i>
             <span>Financeiro</span>
         </a>
     </li>
     <li>
         <a href="{{route('relatorios.index')}}"
-           class="modulo {{ (request()->is('relatorios') or request()->is('relatorios/*'))  ? 'active' : '' }} ">
+           class="tab modulo {{ (request()->is('relatorios') or request()->is('relatorios/*'))  ? 'active' : '' }} ">
             <i class="material-icons left">bar_chart</i>
             <span>Relatórios</span>
         </a>
     </li>
+    <li><a class="tab" href="{{ route('logout') }}"
+        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+         Sair
+         <i class="material-icons left">exit_to_app</i>
+     </a>
+     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+         @csrf
+     </form>
+ </li>
 @endsection
 

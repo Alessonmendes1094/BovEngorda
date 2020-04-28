@@ -6,7 +6,7 @@
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">Compra</span>
-                    <form method="POST" action="{{route('manejo.save')}}">
+                    <form method="POST" action="{{route('compra.save')}}">
                         <div class="row">
                             @csrf
                             <input type="hidden" name="id" value="{!! isset($manejo) ? $manejo->id : null !!}">
@@ -40,44 +40,6 @@
                                 <div class="col s12 right">
                                     <button type="submit" class="btn green white-text right">
                                         <i class="material-icons left">save</i>Salvar Compra
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="col s12 m9">
-                                <div class="col s12 right bois">
-                                    <div class="col s12">
-                                        <div class="input-field col s3">
-                                            <i class="material-icons prefix ">fingerprint</i>
-                                            <input id="brinco[0]" name="animal[0][brinco]" type="text"
-                                                   class="validate brinco"
-                                                   required>
-                                            <label for="brinco[0]">Brinco</label>
-                                        </div>
-                                        <div class="input-field col s3">
-                                            <i class="material-icons prefix ">horizontal_split</i>
-                                            <input id="peso[0]" name="animal[0][peso]" type="number" step="any"
-                                                   class="validate peso"
-                                                   required>
-                                            <label for="peso[0]">Peso</label>
-                                        </div>
-                                        <div class="input-field col s3 valordiv">
-                                            <i class="material-icons prefix ">money</i>
-                                            <input id="valor[0]" name="animal[0][valor]" type="number" step="any"
-                                                   class="validate valor"
-                                                   required>
-                                            <label for="valor[0]">Valor</label>
-                                        </div>
-                                        <div class="col s2 divBtnRemov">
-                                            <button class="btn btn-small red btnRemovBoi"><i
-                                                    class="material-icons ">delete</i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col s12 right">
-                                    <button class="btn blue white-text btnAddBoi right"><i
-                                            class="material-icons left">add</i>Adicionar Boi
                                     </button>
                                 </div>
                             </div>

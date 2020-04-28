@@ -43,7 +43,6 @@ class ManejoRepository
         $manejo->tipo = $request->input('tipo');
         if ($manejo->tipo == "compra") {
             $manejo->fornecedor_id = $request->input('fornecedor');
-            $hist_lote = $request->input('lote');
         } else if ($manejo->tipo == "venda") {
             $manejo->cliente_id = $request->input('cliente');
             $hist_lote = $request->input('lote');

@@ -25,16 +25,5 @@ class UsersTableSeeder extends Seeder
             'consumodia' => 2,
             'valorkg' => 8]);
 
-        DB::table('tipobaixas')->insert([
-            'nome' => "Venda"]);
-
-        DB::table('tipobaixas')->insert([
-            'nome' => "Morte"]);
-
-        DB::table('fornecedores')->insert([
-            'nome' => "Maurici"]);
-
-        DB::table('clientes')->insert([
-            'nome' => "Cliente"]);
     }
 }

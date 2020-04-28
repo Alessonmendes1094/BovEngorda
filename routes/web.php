@@ -9,10 +9,9 @@ Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@login');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
-
 Route::get('/', 'HomeController@index')->name('home');
 
-Route::group(['prefix' => 'tabelas'], function(){
+Route::group(['prefix' => 'tabelas'], function () {
     Route::get('/fornecedor', 'Tabelas\FornecedorController@index')->name('fornecedor.index');
     Route::get('/fornecedor/add', 'Tabelas\FornecedorController@showFormFornecedor')->name('fornecedor.showformfornecedor');
     Route::get('/fornecedor/edit/{id}', 'Tabelas\FornecedorController@showFormFornecedorForEdit')->name('fornecedor.showFormFornecedorForEdit');
@@ -62,7 +61,7 @@ Route::group(['prefix' => 'tabelas'], function(){
     Route::post('/tipobaixas/add', 'Tabelas\TipoBaixasController@save')->name('tipobaixa.save');
 });
 
-Route::group(['prefix' => 'animais'], function(){
+Route::group(['prefix' => 'animais'], function () {
     Route::get('/', 'AnimalController@index')->name('animal.index');
     Route::get('/api/verify/{brinco}', 'AnimalController@verifyAnimalByBrinco')->name('api.verifyAnimalByBrinco');
     Route::get('/add', 'AnimalController@showFormAnimal')->name('animal.showFormAnimal');
@@ -72,10 +71,10 @@ Route::group(['prefix' => 'animais'], function(){
     Route::post('/add/importardados', 'AnimalController@importarDados')->name('animal.importarDados');
     Route::get('/edit/{id}', 'AnimalController@showFormAnimalForEdit')->name('animal.showFormAnimalForEdit');
     Route::get('/delelete/{id}', 'AnimalController@delete')->name('animal.delete');
-    Route::get('/buscar/bois/autocomplete' , 'AnimalController@autocomplete')->name('animal.autocomplete');
+    Route::get('/buscar/bois/autocomplete', 'AnimalController@autocomplete')->name('animal.autocomplete');
 });
 
-Route::group(['prefix' => 'pesagem'], function(){
+Route::group(['prefix' => 'pesagem'], function () {
     Route::get('/', 'PesagemController@index')->name('pesagem.index');
     Route::get('/listAnimais', 'PesagemController@listAnimais')->name('pesagem.listAnimais');
     Route::get('/cadastroPeso', 'PesagemController@cadastroPeso')->name('pesagem.cadastroPeso');
@@ -89,22 +88,40 @@ Route::group(['prefix' => 'pesagem'], function(){
     Route::post('/add/importardados', 'PesagemController@importarDados')->name('pesagem.importarDados');
 });
 
-Route::group(['prefix' => 'manejo'], function(){
-    Route::get('/', 'ManejoController@index')->name('manejo.index');
-    Route::get('/novo/venda', 'ManejoController@novaVendaShowAnimais')->name('manejo.novaVendaShowAnimais');
-    Route::post('/novo/venda/form', 'ManejoController@novaVendaShowForm')->name('manejo.novaVendaShowForm');
-    Route::get('/novo/compra', 'ManejoController@novaCompra')->name('manejo.novaCompra');
-    Route::get('/edit/manejo/{id}', 'ManejoController@edit')->name('manejo.edit');
-    Route::post('/novo/manejo', 'ManejoController@save')->name('manejo.save');
-    Route::get('/delete/{id}', 'ManejoController@delete')->name('manejo.delete');
-    Route::get('/{id}', 'ManejoController@edit')->name('manejo.edit');
+Route::group(['prefix' => 'manejo'], function () {
+    
+    Route::group(['prefix' => 'compra'], function () {
+        Route::get('/', 'CompraController@index')->name('compra.index');
+        Route::get('/novo/', 'CompraController@novaCompra')->name('compra.novaCompra');
+        Route::get('/edit/manejo/{id}', 'CompraController@edit')->name('compra.edit');
+        Route::get('/edit/manejo/show/{id}', 'CompraController@showanimais')->name('compra.showanimais');
+        Route::post('/novo/manejo', 'CompraController@save')->name('compra.save');
+        Route::get('/novo/Animal/{id}', 'CompraController@novoanimal')->name('compra.novoanimal');
+        Route::post('/novo/Animal/{id}/manejo', 'CompraController@saveanimais')->name('compra.saveanimais');
+        Route::get('/delete/{id}', 'CompraController@delete')->name('compra.delete');
+        Route::get('/{id}', 'CompraController@edit')->name('compra.edit');
 
-    Route::get('/add/carregardados', 'ManejoController@showFormcarregarDados')->name('manejo.showFormcarregarDados');
-    Route::post('/add/carregardados', 'ManejoController@carregarDados')->name('manejo.carregarDados');
-    Route::post('/add/importardados', 'ManejoController@importarDados')->name('manejo.importarDados');
+        Route::get('/add/carregardados', 'CompraController@showFormcarregarDados')->name('compra.showFormcarregarDados');
+        Route::post('/add/carregardados', 'CompraController@carregarDados')->name('compra.carregarDados');
+        Route::post('/add/importardados', 'CompraController@importarDados')->name('compra.importarDados');
+    });
+    Route::group(['prefix' => 'venda'], function () {
+        Route::get('/', 'VendaController@index')->name('venda.index');
+        Route::get('/novo', 'VendaController@novaVendaShowAnimais')->name('venda.novaVendaShowAnimais');
+        Route::post('/novo/form', 'VendaController@novaVendaShowForm')->name('venda.novaVendaShowForm');
+        Route::get('/edit/manejo/{id}', 'VendaController@edit')->name('venda.edit');
+        Route::post('/novo/manejo', 'VendaController@save')->name('venda.save');
+        Route::post('/novo/Animal/manejo', 'VendaController@saveanimais')->name('venda.saveanimais');
+        Route::get('/delete/{id}', 'VendaController@delete')->name('venda.delete');
+        Route::get('/{id}', 'VendaController@edit')->name('venda.edit');
+
+        Route::get('/add/carregardados', 'VendaController@showFormcarregarDados')->name('venda.showFormcarregarDados');
+        Route::post('/add/carregardados', 'VendaController@carregarDados')->name('venda.carregarDados');
+        Route::post('/add/importardados', 'VendaController@importarDados')->name('venda.importarDados');
+    });
 });
 
-Route::group(['prefix' => 'financeiro'], function() {
+Route::group(['prefix' => 'financeiro'], function () {
     Route::get('/', 'FinanceiroController@index')->name('financeiro.index');
     Route::get('/novaentrada', 'FinanceiroController@showFormEntrada')->name('financeiro.showFormEntrada');
     Route::get('/novasaida', 'FinanceiroController@showFormSaida')->name('financeiro.showFormSaida');
@@ -113,7 +130,7 @@ Route::group(['prefix' => 'financeiro'], function() {
     Route::get('/delete/{id}', 'FinanceiroController@delete')->name('financeiro.delete');
 });
 
-Route::group(['prefix' => 'relatorios'], function() {
+Route::group(['prefix' => 'relatorios'], function () {
     Route::get('/', 'RelatoriosControlller@index')->name('relatorios.index');
     Route::post('/gmdadnimal', 'RelatoriosControlller@gmdAnimal')->name('relatorios.gmdAnimal');
     Route::get('/gmdadnimal/excel/{request}/{req2}/{req3}', 'RelatoriosControlller@gmdAnimalExcel')->name('relatorios.gmdAnimal.excel');

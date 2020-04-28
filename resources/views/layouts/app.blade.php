@@ -25,33 +25,20 @@
         </form>
     </li>
 </ul>
+<ul class="sidenav" id="mobile-demo">
+    @yield('li')
+</ul>
 <nav>
+    
     <div class="nav-wrapper">
         <a href="#!" class="brand-logo">BoiEngorda</a>
         <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
         <ul class="right hide-on-med-and-down">
             @yield('li')
-            <li>
-                <a class="dropdown-trigger" href="#!" data-target="dropdown1">Bem Vindo {{auth()->user()->name}}
-                    <i class="material-icons right">arrow_drop_down</i>
-                </a>
-            </li>
         </ul>
     </div>
 </nav>
 
-<ul class="sidenav" id="mobile-demo">
-    @yield('li')
-    <li><a class="" href="{{ route('logout') }}"
-           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-            Sair
-            <i class="material-icons left">exit_to_app</i>
-        </a>
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-            @csrf
-        </form>
-    </li>
-</ul>
 
 <div class="container">
     @if(Session::has('success'))
