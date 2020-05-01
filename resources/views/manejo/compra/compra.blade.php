@@ -22,7 +22,7 @@
                                 <div class="input-field col s12">
                                     <i class="material-icons prefix">device_hub</i>
                                     <input id="valorkg" name="valorkg" type="number" step="any" class="validate"
-                                           value="{!! isset($manejo) ? $manejo->valorkg : 0 !!}" required>
+                                           value="{!! isset($manejo) ? $manejo->valorkg : '' !!}" required>
                                     <label for="valorkg">Valor Kg</label>
                                 </div>
                                 <div class="input-field col s12">
