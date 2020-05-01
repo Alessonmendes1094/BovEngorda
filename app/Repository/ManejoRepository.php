@@ -9,23 +9,22 @@ use App\Manejo;
 use App\ManejoAnimais;
 use App\Pesagem;
 use App\Raca;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class CompraRepository
+class ManejoRepository
 {
 
     public function findAllManejosResumo($request)
     {
 
         return Manejo::
-            leftjoin('manejos_animais', 'manejos_animais.manejo_id', '=', 'manejos.id')
+            join('manejos_animais', 'manejos_animais.manejo_id', '=', 'manejos.id')
             ->leftjoin('fornecedores', 'fornecedores.id', '=', 'manejos.fornecedor_id')
-            ->select('manejos.id', 'fornecedores.nome as fornecedor', 'data', 'tipo', DB::raw('count(animal_id) as qtdAnimais, sum(valor) as valorTotals'))
+            ->leftjoin('clientes', 'clientes.id', '=', 'manejos.cliente_id')
+            ->select('manejos.id', 'fornecedores.nome as fornecedor', 'clientes.nome as cliente', 'data', 'tipo', DB::raw('count(animal_id) as qtdAnimais, sum(valor) as valorTotals'))
             ->where($this->buildFiltro($request))
-            ->where('tipo', '=', 'compra')
-            ->groupBy('manejos.id', 'fornecedores.nome', 'data', 'tipo')
+            ->groupBy('manejos.id', 'fornecedores.nome', 'clientes.nome', 'data', 'tipo')
             ->orderBy('data', 'desc')
             ->paginate(25);
     }
@@ -37,37 +36,22 @@ class CompraRepository
             $manejo = new Manejo();
         }
 
-        $manejo->data          = $request->input('data');
-        $manejo->tipo          = 'compra';
-        $manejo->fornecedor_id = $request->input('fornecedor');
-        $manejo->valorkg       = $request->input('valorkg');
-        $manejo->save();
-
-        return $manejo;
-    }
-
-    public function saveanimais($animal, $manejo)
-    {
-        $newanimal                = new Animal();
-        $newanimal->brinco        = $animal->brinco;
-        $newanimal->nome          = "Boi " . $animal->brinco;
-        $newanimal->sexo          = $animal->sexo;
-        $newanimal->id_fornecedor = $manejo->fornecedor_id;
-        $newanimal->id_raca       = $animal->raca;
-
-        #calcula o lote do animal
-        $lote = Lote::where('peso_inicial', '<=', $animal->peso)->where('peso_final', '>=', $animal->peso)->first();
-        #verifica se o peso informado pertence a algum lote
-        if (!isset($lote)) {
-            Session::flash('erro', 'Não Encontrado Lote com o peso informado! Verifique o peso, ou cadastro de lotes');
-            return route('compra.novoanimal', $manejo->id);
+        $manejo->data = $request->input('data');
+        $manejo->tipo = $request->input('tipo');
+        if ($manejo->tipo == "compra") {
+            $manejo->fornecedor_id = $request->input('fornecedor');
+            $hist_lote             = $request->input('lote');
+        } else if ($manejo->tipo == "venda") {
+            $manejo->cliente_id = $request->input('cliente');
+            $hist_lote          = $request->input('lote');
         }
-        
-        $newanimal->id_lote          = $lote->id;
-        $newanimal->id_manejo_compra = $manejo->id;
-        $newanimal->save();
-        return $newanimal;
-
+        $manejo->valorkg = $request->input('valorkg');
+        $animais         = $request->input('animal');
+        $manejo->save();
+        if (count($animais) > 0) {
+            $this->deleteManejoAnimais($manejo);
+            $this->saveManejoAnimais($animais, $manejo, $hist_lote);
+        }
     }
 
     private function deleteManejoAnimais(Manejo $manejo)
@@ -75,38 +59,14 @@ class CompraRepository
         ManejoAnimais::where('manejo_id', '=', $manejo->id)->delete();
     }
 
-    public function saveManejoAnimais($animal, $id)
+    private function saveAnimal($request, $manejo)
     {
-        //busca manejo
-        $manejo = Manejo::find($id);
-
-        //inicializa variavel historico
-        $historico         = new HistoricoLotes();
-        $historico->origem = "Compra";
-
-        //salva Animais
-        $animalSaved = $this->saveAnimais($animal, $manejo);
-
-        //grava dados na variavel historico
-        $historico->id_lote = $animalSaved->id_lote;
-
-        //grava pesagem que ficará vinculada ao manejo de venda
-        $pesagemSaved = $this->savePesagem($animal, $manejo, $animalSaved);
-
-        //termina inclusão da variavel historico e salva na base.
-        $historico->data       = $manejo->data;
-        $historico->id_animal  = $animalSaved->id;
-        $historico->id_pesagem = $pesagemSaved->id;
-        $historico->save();
-
-        //cria manejo do animal vinculando a variavel $pesagemSaved.
-        $manejoAnimal             = new ManejoAnimais();
-        $manejoAnimal->animal_id  = $animalSaved->id;
-        $manejoAnimal->pesagem_id = $pesagemSaved->id;
-        $manejoAnimal->manejo_id  = $manejo->id;
-        $manejoAnimal->valor      = ($animal['peso'] * $manejo->valorkg);
-        $manejoAnimal->save();
-
+        $animal                = new Animal();
+        $animal->brinco        = $request['brinco'];
+        $animal->nome          = "Boi " . $request['brinco'];
+        $animal->id_fornecedor = $manejo->fornecedor_id;
+        $animal->save();
+        return $animal;
     }
 
     private function savePesagem($request, $manejo, $animalSaved)
@@ -117,6 +77,53 @@ class CompraRepository
         $pesagem->animal_id = $animalSaved->id;
         $pesagem->save();
         return $pesagem;
+    }
+
+    public function saveManejoAnimais($animais, Manejo $manejo, $hist_lote)
+    {
+        foreach ($animais as $animal) {
+            //inicializa variavel historico
+            $historico = new HistoricoLotes();
+
+            if ($manejo->tipo == "compra") {
+                //salva Animais
+                $animalSaved = $this->saveAnimal($animal, $manejo);
+
+                //grava dados na variavel historico
+                $historico->origem  = "Compra";
+                $historico->id_lote = $hist_lote;
+
+            } else if ($manejo->tipo == "venda") {
+                //busca animal cadastrado
+                $animalSaved               = Animal::find($animal["id"]);
+                $animalSaved->id_tipobaixa = 1;
+                $animalSaved->save();
+
+                //grava dados na variavel historico
+                $historico->origem  = "Ultima Pesagem";
+                $historico->id_lote = $animalSaved->id_lote;
+
+                //grava ultima pesagem antes da venda (utilizado para calculo do custo com alimento até o ultimo peso)
+                $pesagemUlt = $this->savePesagem($animal, $manejo, $animalSaved);
+
+            }
+            //grava pesagem que ficará vinculada ao manejo de venda
+            $pesagemSaved = $this->savePesagem($animal, $manejo, $animalSaved);
+
+            //termina inclusão da variavel historico e salva na base.
+            $historico->data       = $manejo->data;
+            $historico->id_animal  = $animalSaved->id;
+            $historico->id_pesagem = $pesagemSaved->id;
+            $historico->save();
+
+            //cria manejo do animal vinculando a variavel $pesagemSaved.
+            $manejoAnimal             = new ManejoAnimais();
+            $manejoAnimal->animal_id  = $animalSaved->id;
+            $manejoAnimal->pesagem_id = $pesagemSaved->id;
+            $manejoAnimal->manejo_id  = $manejo->id;
+            $manejoAnimal->valor      = $animal['valor'];
+            $manejoAnimal->save();
+        }
     }
 
     public function delete($id)
@@ -169,23 +176,40 @@ class CompraRepository
                     //Inicializa variavel Historico
                     $historico = new HistoricoLotes();
 
-                    //se não for venda é cadastrado um novo animal
-                    $animal                = new Animal();
-                    $animal->brinco        = $row[$request->input('brinco')];
-                    $animal->nome          = "Boi " . $request['brinco'];
-                    $animal->id_fornecedor = $manejo->fornecedor_id;
-                    $animal->save();
+                    if ($manejo->tipo == "venda") {
+                        //busca animal cadastrado
+                        $animal               = Animal::where('brinco', '=', $row[$request->input('brinco')])->first();
+                        $animal->id_tipobaixa = 1;
+                        $animal->save();
 
-                    //define a origem de compra no historico
-                    $historico->origem = "Compra_Imp";
+                        //define a origem do historico na variavel
+                        $historico->origem = "Venda_Imp";
 
+                        //grava ultima pesagem antes da venda (utilizado para calculo do custo com alimento até o ultimo peso)
+                        $pesagemUlt            = new Pesagem();
+                        $pesagemUlt->data      = $manejo->data;
+                        $pesagemUlt->peso      = $row[$request->input('peso')];
+                        $pesagemUlt->animal_id = $animal->id;
+                        $pesagemUlt->save();
+
+                    } else {
+                        //se não for venda é cadastrado um novo animal
+                        $animal                = new Animal();
+                        $animal->brinco        = $row[$request->input('brinco')];
+                        $animal->nome          = "Boi " . $request['brinco'];
+                        $animal->id_fornecedor = $manejo->fornecedor_id;
+                        $animal->save();
+
+                        //define a origem de compra no historico
+                        $historico->origem = "Compra_Imp";
+                    }
                     if (isset($animal)) {
                         // verefica se existe o lote se não existe cadastro um novo
-                        $colunaLote = Lote::where('peso_inicial', '<=', $row[$request->input('peso')])->where('peso_final', '>=', $row[$request->input('peso')])->first();
+                        $colunaLote = $request->input('lote');
                         if (isset($colunaLote)) {
-                            $lote             = Lote::where('id', '=', $colunaLote->id)->first();
+                            $lote             = Lote::where('nome', '=', $row[$colunaLote])->first();
                             $lote             = is_null($lote) ? new Lote() : $lote;
-                            $lote->nome       = 'lote criado por importação';
+                            $lote->nome       = $row[$colunaLote];
                             $lote->racao      = 'Ração Padrão';
                             $lote->consumodia = '1';
                             $lote->valorkg    = '1';
@@ -247,4 +271,7 @@ class CompraRepository
             ->where('tipo', '=', $tipo)->first();
     }
 
+    public function findVendaByAnimal($animal)
+    {
+    }
 }

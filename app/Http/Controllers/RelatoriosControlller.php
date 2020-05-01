@@ -31,7 +31,7 @@ class RelatoriosControlller extends Controller
         $this->animalRepository = new AnimalRepository();
         $this->loteRepository = new LoteRepository();
         $this->racaRepository = new RacaRepository();
-        $this->manejoRepository = new ManejoRepository();
+        #$this->manejoRepository = new ManejoRepository();
         $this->relatorioRepository = new RelatorioRepository();
         $this->clienteRepository = new ClienteRepository();
         $this->middleware('auth');

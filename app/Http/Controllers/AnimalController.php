@@ -31,7 +31,7 @@ class AnimalController extends Controller
         $this->racaRepository = new RacaRepository();
         $this->pessagemRepository = new PesagemRepository();
         $this->tipoBaixasRepository = new TipoBaixasRepository();
-        $this->manejoRepository = new ManejoRepository();
+        #$this->manejoRepository = new ManejoRepository();
         $this->middleware('auth');
     }
 

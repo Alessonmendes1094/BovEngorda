@@ -9,7 +9,7 @@
                     <span class="card-title">Carregar Dados</span>
                     <div class="row">
                         <div class="col s12">
-                            <form action="{{route('manejo.carregarDados')}}" method="POST"
+                            <form action="{{route('venda.carregarDados')}}" method="POST"
                                   enctype="multipart/form-data">
                                 @csrf
                                 <div class="file-field input-field">

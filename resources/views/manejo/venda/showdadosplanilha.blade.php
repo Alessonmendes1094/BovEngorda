@@ -8,7 +8,7 @@
                     <span class="card-title">Dados da Tabela</span>
                     <div class="row">
                         <div class="col s12">
-                            <form id="formexcel" method="POST" action="{{route('manejo.importarDados')}}">
+                            <form id="formexcel" method="POST" action="{{route('venda.importarDados')}}">
                                 @csrf
                                 <input hidden name="dados" value="{{json_encode($dados)}}">
                                 <input hidden name="manejo" value="{{json_encode($manejo)}}">

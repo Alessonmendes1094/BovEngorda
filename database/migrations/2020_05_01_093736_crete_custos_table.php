@@ -20,6 +20,7 @@ class CreteCustosTable extends Migration
             $table->string('descricao')->nullable();
             $table->decimal('qtd_animais', 3)->nullable();
             $table->decimal('valor_total', 8, 2)->nullable();
+            $table->date('data');
             $table->timestamps();
         });
     }

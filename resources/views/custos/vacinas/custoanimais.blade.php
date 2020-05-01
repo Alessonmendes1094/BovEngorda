@@ -1,4 +1,4 @@
-@extends('custos.layout')
+@extends('tabelas.layout')
 
 @section('content_tabela')
 <div class="row">

@@ -6,7 +6,7 @@
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">Venda</span>
-                    <form method="POST" action="{{route('manejo.save')}}">
+                    <form method="POST" action="{{route('venda.save')}}">
                         <div class="row">
                             @csrf
                             <input type="hidden" name="id">

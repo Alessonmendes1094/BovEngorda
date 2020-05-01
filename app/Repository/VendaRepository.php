@@ -15,10 +15,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 
-class ManejoRepository
+class VendaRepository
 {
 
-    public function findAllManejosResumo($request)
+    public function findAllvendasResumo($request)
     {
 
         return Manejo::
@@ -51,12 +51,12 @@ class ManejoRepository
         $animais = $request->input('animal');
         $manejo->save();
         if (count($animais) > 0) {
-            $this->deleteManejoAnimais($manejo);
-            $this->saveManejoAnimais($animais, $manejo, $hist_lote);
+            $this->deletevendaAnimais($manejo);
+            $this->savevendaAnimais($animais, $manejo, $hist_lote);
         }
     }
 
-    private function deleteManejoAnimais(Manejo $manejo)
+    private function deletevendaAnimais(Manejo $manejo)
     {
         ManejoAnimais::where('manejo_id', '=', $manejo->id)->delete();
     }
@@ -81,7 +81,7 @@ class ManejoRepository
         return $pesagem;
     }
 
-    public function saveManejoAnimais($animais, Manejo $manejo, $hist_lote)
+    public function savevendaAnimais($animais, Manejo $manejo, $hist_lote)
     {
         foreach ($animais as $animal) {
             //inicializa variavel historico

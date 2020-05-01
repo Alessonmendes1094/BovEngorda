@@ -6,7 +6,7 @@
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">Filtro</span>
-                    <form method="GET" action="{{route('manejo.index')}}">
+                    <form method="GET" action="{{route('venda.index')}}">
                         <div class="row">
                             <div class="input-field col s12">
                                 <input id="dataInit" name="dataInit" type="date" value="{{request()->query('dataInit')}}">
@@ -49,15 +49,11 @@
                     <span class="card-title">Manejos Cadastrados</span>
                     <div class="row">
                         <div class="col s12 right btnacoes">
-                            <a class="btn green white-text right" href="{{route('manejo.novaVendaShowAnimais')}}">
+                            <a class="btn green white-text right" href="{{route('venda.novaVendaShowAnimais')}}">
                                 <i class="material-icons right">add</i>
                                 Nova Venda
                             </a>
-                            <a class="btn green white-text right" href="{{route('manejo.novaCompra')}}">
-                                <i class="material-icons right">add</i>
-                                Nova Compra
-                            </a>
-                            <a class="btn blue white-text right"  href="{{route('manejo.showFormcarregarDados')}}">
+                            <a class="btn blue white-text right"  href="{{route('venda.showFormcarregarDados')}}">
                                 <i class="material-icons right">cloud_upload</i>
                                 Importar Dados
                             </a>
@@ -96,7 +92,7 @@
 {{--                                                <i class="material-icons">edit</i>--}}
 {{--                                            </a>--}}
                                             <button
-                                                data-content="{{route('manejo.delete', $manejo->id)}}"
+                                                data-content="{{route('venda.delete', $manejo->id)}}"
                                                 class="btnDelete waves-effect red  btn-small">
                                                 <i class="material-icons">delete</i>
                                             </button>

@@ -6,7 +6,7 @@
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">Filtro</span>
-                    <form method="GET" action="{{route('manejo.novaVendaShowAnimais')}}">
+                    <form method="GET" action="{{route('venda.novaVendaShowAnimais')}}">
                         <div class="row">
                             <div class="input-field col s12">
                                 <input id="brinco" name="brinco" value="{{request()->query('brinco')}}" type="text"
@@ -55,7 +55,7 @@
         </div>
         <div class="col s12 l9">
             <div class="card">
-                <form action="{{route('manejo.novaVendaShowForm')}}" method="POST">
+                <form action="{{route('venda.novaVendaShowForm')}}" method="POST">
                     @csrf
                     <div class="card-content">
                         <span class="card-title">Selecione os animais que serão vendidos</span>

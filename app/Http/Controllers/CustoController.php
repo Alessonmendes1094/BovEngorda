@@ -4,25 +4,31 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Repository\FornecedorRepository;
+use App\Repository\CustosDiversosRepository;
+use App\Repository\CustosVacinasRepository;
+use App\Repository\CustosBaixasRepository;
 
 class CustoController extends Controller
 {
     private $custosDiversosRepository;
+    private $custosVacinasRepository;
+    private $custosBaixasRepository;
     public function __construct()
     {
-        $this->custosDiversosRepository = new FornecedorRepository();
+        $this->custosDiversosRepository = new CustosDiversosRepository();
+        $this->custosVacinasRepository = new CustosVacinasRepository();
+        $this->custosBaixasRepository = new CustosBaixasRepository();
         $this->middleware('auth');
     }
 
     public function indexDiversos(Request $request)
     {
-        $fornecedores = $this->custosDiversosRepository->findAll($request);
-        return view('tabelas.fornecedor.index', compact('fornecedores'));
+        $custos = $this->custosDiversosRepository->findAll($request);
+        return view('custos.diversos.index', compact('custos'));
     }
 
     public function showFormDiversos(){
-        return view('tabelas.fornecedor.fornecedor');
+        return view('custos.diversos.novocusto');
     }
 
     public function saveDiversos(Request $request){
@@ -37,7 +43,7 @@ class CustoController extends Controller
     }
 
     public function deleteDiversos($id){
-        $this->custosDiversosRepository->deleteById($id);
+        $this->custosDiversosRepository->delete($id);
         session()->flash('status', 'Fornecedor Apagado');
         return redirect()->route('fornecedor.index');
     }
@@ -47,6 +53,26 @@ class CustoController extends Controller
     }
 
     public function animaisShowForm(Request $request , $id){
-        
+
+    }
+    ############################################################################
+    public function indexVacinas(Request $request)
+    {
+        $custos = $this->custosVacinasRepository->findAll($request);
+        return view('custos.vacinas.index', compact('custos'));
+    }
+
+    public function showFormVacinas(){
+        return view('custos.vacinas.novocusto');
+    }
+    ##############################################################################
+    public function indexBaixas(Request $request)
+    {
+        $custos = $this->custosBaixasRepository->findAll($request);
+        return view('custos.baixas.index', compact('custos'));
+    }
+
+    public function showFormBaixas(){
+        return view('custos.baixas.novocusto');
     }
 }
