@@ -60,10 +60,10 @@
                     <div class="row">
                         <div class="col s12 right btnacoes">
 
-                            <a class="btn green white-text right"
+                            <!--<a class="btn green white-text right"
                                href="{{route('pesagem.listAnimais')}}"><i
                                     class="material-icons right">group_add</i>Pessagem em Massa</a>
-
+                            -->
                             <a class="btn green white-text right"
                                href="{{route('pesagem.cadastroPeso')}}"><i
                                     class="material-icons right">person_add</i>Pesagem Individual</a>

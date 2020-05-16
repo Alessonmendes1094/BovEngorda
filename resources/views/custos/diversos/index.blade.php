@@ -28,7 +28,7 @@
                                         <td>{{$custo->titulo}}</td>
                                         <td>{{$custo->qtd_animais}}</td>
                                         <td>{{$custo->valor_total}}</td>
-                                        <td>{{$custo->created_at}}</td>
+                                        <td>{{$custo->data->format('d/m/Y')}}</td>
                                         <td>
                                             <a href="{{route('custos.diversos.showFormCustosDiversosForEdit', $custo->id)}}"
                                                class="btnTableUser waves-effect blue btn-small"><i

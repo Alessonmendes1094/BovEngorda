@@ -34,7 +34,7 @@ class CustoController extends Controller
     public function saveDiversos(Request $request){
         $this->custosDiversosRepository->save($request);
         session()->flash('status', 'Fornecedor Salvo');
-        return redirect()->route('fornecedor.index');
+        return redirect()->route('custos.diversos.index');
     }
 
     public function showFormDiversosForEdit($id){
@@ -44,8 +44,8 @@ class CustoController extends Controller
 
     public function deleteDiversos($id){
         $this->custosDiversosRepository->delete($id);
-        session()->flash('status', 'Fornecedor Apagado');
-        return redirect()->route('fornecedor.index');
+        session()->flash('status', 'Custo Apagado');
+        return redirect()->route('custos.diversos.index');
     }
 
     public function diversosShowAnimais($id){

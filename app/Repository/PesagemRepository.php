@@ -60,7 +60,7 @@ class PesagemRepository
     {
         $req = $request->all();
         $animal_concatenar = $this->animal($request);
-
+        
         $peso = $req['peso'];
         $lote = Lote::where('peso_inicial', '<=', $peso)->where('peso_final', '>=', $peso)->first();
         #verifica se o peso informado pertence a algum lote
@@ -72,7 +72,7 @@ class PesagemRepository
 
         #gera nova pesagem do animal
         $pesagem = new Pesagem();
-        $pesagem->data = Date('Y-m-d');
+        $pesagem->data = $req['data'];
         $pesagem->peso = $req['peso'];
         $pesagem->animal_id = $animal_concatenar->id;
         $pesagem->save();
@@ -89,7 +89,7 @@ class PesagemRepository
             $historicoLote->lote_alterado = "S";
         }
         #continua o processo de gravação do historico do lote
-        $historicoLote->data = Date('Y-m-d');
+        $historicoLote->data = $req['data'];
         $historicoLote->id_lote = $animal->id_lote;
         $historicoLote->id_animal = $animal->id;
         $historicoLote->origem = "Pesagem";

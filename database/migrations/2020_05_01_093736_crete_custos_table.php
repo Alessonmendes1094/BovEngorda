@@ -16,7 +16,7 @@ class CreteCustosTable extends Migration
         Schema::create('custos', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('tipo');
-            $table->string('tituto');
+            $table->string('titulo');
             $table->string('descricao')->nullable();
             $table->decimal('qtd_animais', 3)->nullable();
             $table->decimal('valor_total', 8, 2)->nullable();

@@ -22,7 +22,7 @@
                                         <div class="row">
                                             <div class="input-field col s12">
                                                 <i class="material-icons prefix">account_circle</i>
-                                                <input id="titulo" name="titulo" type="text" class="validate"
+                                                <input id="titulo" name="titulo" type="text" required class="validate"
                                                        value="{!! isset($custo) ? $custo->titulo : null !!}"
                                                        required>
                                                 <label for="titulo">Titulo</label>
@@ -35,9 +35,15 @@
                                             </div>
                                             <div class="input-field col s12">
                                                 <i class="material-icons prefix">money</i>
-                                                <input id="valor" type="text" name="valor" class="validate"
+                                                <input id="valor" type="text" name="valor" required class="validate"
                                                        value="{!! isset($custo) ? $custo->valor : null !!}">
                                                 <label for="valor">valor</label>
+                                            </div>
+                                            <div class="input-field col s12">
+                                                <i class="material-icons prefix">date_range</i>
+                                                <input id="data" type="date" name="data" required class="validate"
+                                                       value="{!! isset($custo) ? $custo->data : null !!}">
+                                                <label for="data">Data</label>
                                             </div>
                                             <div class="col s12">
                                                 <button type="submit"

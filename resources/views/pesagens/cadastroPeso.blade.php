@@ -16,16 +16,25 @@
                                     {{csrf_field()}}
                                     <div class="row">
                                         <div class="input-field col s12">
-                                            <i class="material-icons prefix">textsms</i>
+                                            <i class="material-icons prefix">date_range</i>
+                                            <input type="date" id="data" name="data"
+                                                   class="" >
+                                            <label for="data">Data</label>
+                                            @error('data')
+                                            <span class="helper-text" style="color:red">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                        <div class="input-field col s12">
+                                            <i class="material-icons prefix">fingerprint</i>
                                             <input type="text" id="autocomplete-input" name="animal"
                                                    class="autocomplete" autocomplete="off">
-                                            <label for="autocomplete-input">Autocomplete</label>
+                                            <label for="autocomplete-input">Brinco</label>
                                             @error('animal')
                                             <span class="helper-text" style="color:red">{{ $message }}</span>
                                             @enderror
                                         </div>
                                         <div class="input-field col s12">
-                                            <i class="material-icons prefix">line_weight</i>
+                                            <i class="material-icons prefix">fitness_center</i>
                                             <input id="peso" name="peso" type="number" step="any"
                                                    class="validate"
                                                    required>
