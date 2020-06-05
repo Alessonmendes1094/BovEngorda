@@ -8,7 +8,7 @@
                     <span class="card-title">Custos Vacinas Cadastrados</span>
                     <div class="row">
                         <div class="col s12 right">
-                            <a class="btn green white-text right" href="{{route('custos.vacinas.showformcustosvacinas')}}"><i
+                            <a class="btn green white-text right" href="{{route('custos.vacinas.showformcustos')}}"><i
                                     class="material-icons right">add</i>Novo Custo</a>
                         </div>
                         <div class="col s12 right">
@@ -16,9 +16,9 @@
                                 <thead>
                                 <tr>
                                     <th>Titulo</th>
-                                    <th>Qtd Animais</th>
-                                    <th>Valor Total</th>
+                                    <th>Valor</th>
                                     <th>Data</th>
+                                    <th>Opções</th>
                                 </tr>
                                 </thead>
 
@@ -26,15 +26,11 @@
                                 @foreach($custos as $custo)
                                     <tr>
                                         <td>{{$custo->titulo}}</td>
-                                        <td>{{$custo->qtd_animais}}</td>
                                         <td>{{$custo->valor_total}}</td>
-                                        <td>{{$custo->data}}</td>
+                                        <td>{{$custo->data->format('d/m/Y')}}</td>
                                         <td>
-                                            <a href="{{route('custos.diversos.showFormCustosDiversosForEdit', $custo->id)}}"
-                                               class="btnTableUser waves-effect blue btn-small"><i
-                                                    class="material-icons">edit</i></a>
-                                            <button data-content="{{route('custos.diversos.delete', $custo->id)}}"
-                                                    class="btnTableUser btnDelete waves-effect red  btn-small"><i
+                                            <button data-content="{{route('custos.vacinas.delete', $custo->id)}}"
+                                                    class="btnDelete waves-effect red  btn-small"><i
                                                     class="material-icons">delete</i></button>
                                         </td>
                                     </tr>

@@ -25,7 +25,12 @@ class CustosDiversosRepository
             ->paginate(25);
     }
 
-public function qtdAnimais($id)){
+    public function findById($request)
+    {
+        return Custo::find($request);
+    }
+
+public function qtdAnimais($id){
     return Custo_Animal::where('id_custos','=',$id)->count();    
 }
 
@@ -33,7 +38,10 @@ public function qtdAnimais($id)){
     {
         $custoreq = $request->all();
         
-        $custo = new Custo();
+        $custo = Custo::find($custoreq['id']);
+        if (!isset($custo)) {
+            $custo = new Custo();
+        }
         $custo->tipo = 'Diversos';
         $custo->titulo = $custoreq['titulo'];
         $custo->descricao = $custoreq['descricao'];
@@ -55,7 +63,10 @@ public function qtdAnimais($id)){
         foreach ($animais as $animal){
             $seq = $seq +1;
 
+            $custoanimal = Custo_Animal::where('id_custos','=',$custo['id'])->where('id_animais','=',$animal->id)->first();
+        if (!isset($custoanimal)) {
             $custoanimal = new Custo_Animal();
+        }
             $custoanimal->valor = $valoranimal;
             $custoanimal->sequencia = $seq;
             $custoanimal->id_animais = $animal->id;
@@ -67,6 +78,12 @@ public function qtdAnimais($id)){
     public function delete($id)
     {
         Custo::destroy($id);
+    }
+
+    public function diversosShowAnimais($id){
+        $animais = Custo_Animal::where('id_custos','=',$id)
+        ->paginate(100);
+        return $animais;
     }
 
 }

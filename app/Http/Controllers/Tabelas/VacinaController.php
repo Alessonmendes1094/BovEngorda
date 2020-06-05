@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tabelas;
 
 use App\Http\Controllers\Controller;
 use App\Repository\VacinaRepository;
+use App\Vacina;
 use Illuminate\Http\Request;
 
 class VacinaController extends Controller
@@ -19,6 +20,15 @@ class VacinaController extends Controller
     {
         $vacinas = $this->vacinaRepository->findAll($request);
         return view('tabelas.vacina.index', compact('vacinas'));
+    }
+
+    public function autocomplete(Request $request) {
+
+        $search = $request->get('term');
+
+        $result = Vacina::all();
+
+        return response()->json($result);
     }
 
     public function showFormVacina(){

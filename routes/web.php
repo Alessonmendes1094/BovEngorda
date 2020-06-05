@@ -23,6 +23,7 @@ Route::group(['prefix' => 'tabelas'], function () {
     Route::get('/vacina/edit/{id}', 'Tabelas\VacinaController@showFormVacinaForEdit')->name('vacina.showformVacinaForEdit');
     Route::get('/vacina/delelete/{id}', 'Tabelas\VacinaController@delete')->name('vacina.delete');
     Route::post('/vacina/add', 'Tabelas\VacinaController@save')->name('vacina.save');
+    Route::get('/vacina/buscar/autocomplete', 'Tabelas\VacinaController@autocomplete')->name('vacina.autocomplete');
 
     Route::get('/cliente', 'Tabelas\ClienteController@index')->name('cliente.index');
     Route::get('/cliente/add', 'Tabelas\ClienteController@showFormCliente')->name('cliente.showformcliente');
@@ -124,21 +125,18 @@ Route::group(['prefix' => 'manejo'], function () {
 Route::group(['prefix' => 'custos'], function () {
     Route::group(['prefix' => 'diversos'], function () {
         Route::get('/', 'CustoController@indexDiversos')->name('custos.diversos.index'); #index
-        Route::get('/add', 'CustoController@showFormDiversos')->name('custos.diversos.showformcustosdiversos'); #novo custo
-        Route::get('/edit/{id}', 'CustoController@showFormDiversosForEdit')->name('custos.diversos.showFormCustosDiversosForEdit'); #editar custo
+        Route::get('/add', 'CustoController@showFormDiversos')->name('custos.diversos.showformcustos'); #novo custo
+        Route::get('/edit/{id}', 'CustoController@EditarDiversos')->name('custos.diversos.editar'); #editar custo
         Route::get('/delelete/{id}', 'CustoController@deleteDiversos')->name('custos.diversos.delete'); #deletar custo
         Route::post('/add', 'CustoController@saveDiversos')->name('custos.diversos.save'); #salvar custo
-        Route::get('/{id}/animais', 'VendaController@diversosShowAnimais')->name('custos.diversos.ShowAnimais'); #listar animais
-        Route::post('/{id}/form', 'VendaController@animaisShowForm')->name('custos.diversos.animaisShowForm'); #gravar animais
+        Route::get('/{id}/animais', 'CustoController@diversosShowAnimais')->name('custos.diversos.ShowAnimais'); #listar animais
     });
     Route::group(['prefix' => 'vacinas'], function () {
-        Route::get('/', 'CustoController@indexVacinas')->name('custos.vacinas.index'); #index
-        Route::get('/add', 'CustoController@showFormVacinas')->name('custos.vacinas.showformcustosvacinas'); #novo custo
-        Route::get('/edit/{id}', 'CustoController@showFormVacinasForEdit')->name('custos.vacinas.showFormCustosVacinasForEdit'); #editar custo
-        Route::get('/delelete/{id}', 'CustoController@deleteVacinas')->name('custos.vacinas.delete'); #deletar custo
-        Route::post('/add', 'CustoController@saveVacinas')->name('custos.vacinas.save'); #salvar custo
-        Route::get('/{id}/animais', 'VendaController@vacinasShowAnimais')->name('custos.vacinas.ShowAnimais'); #listar animais
-        Route::post('/{id}/form', 'VendaController@animaisVacinasShowForm')->name('custos.vacinas.animaisShowForm'); #gravar animais
+        Route::get('/', 'CustoController@indexVacina')->name('custos.vacinas.index'); #index
+        Route::get('/add', 'CustoController@showFormVacina')->name('custos.vacinas.showformcustos'); #novo custo
+        Route::get('/delelete/{id}', 'CustoController@deleteVacina')->name('custos.vacinas.delete'); #deletar custo
+        Route::post('/add', 'CustoController@saveVacina')->name('custos.vacinas.save'); #salvar custo
+        Route::post('/{id}/form', 'CustoController@ShowFormVacina')->name('custos.vacinas.animaisShowForm'); #gravar animais
     });
     Route::group(['prefix' => 'baixas'], function () {
         Route::get('/', 'CustoController@indexBaixas')->name('custos.baixas.index'); #index

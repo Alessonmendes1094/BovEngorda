@@ -18,6 +18,9 @@ class VacinaRepository
         }
         $vacina->nome = $request->input('nome');
         $vacina->descricao = $request->input('descricao');
+        $vacina->dosagem = $request->input('dosagem');
+        $vacina->valor_ml = $request->input('valor_ml');
+        $vacina->valor_pago = $request->input('valor_pago');
         $vacina->save();
     }
 

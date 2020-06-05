@@ -8,7 +8,7 @@
                     <span class="card-title">Custos Diversos Cadastrados</span>
                     <div class="row">
                         <div class="col s12 right">
-                            <a class="btn green white-text right" href="{{route('custos.diversos.showformcustosdiversos')}}"><i
+                            <a class="btn green white-text right" href="{{route('custos.diversos.showformcustos')}}"><i
                                     class="material-icons right">add</i>Novo Custo</a>
                         </div>
                         <div class="col s12 right">
@@ -19,6 +19,7 @@
                                     <th>Qtd Animais</th>
                                     <th>Valor Total</th>
                                     <th>Data</th>
+                                    <th>Opções</th>
                                 </tr>
                                 </thead>
 
@@ -30,11 +31,14 @@
                                         <td>{{$custo->valor_total}}</td>
                                         <td>{{$custo->data->format('d/m/Y')}}</td>
                                         <td>
-                                            <a href="{{route('custos.diversos.showFormCustosDiversosForEdit', $custo->id)}}"
-                                               class="btnTableUser waves-effect blue btn-small"><i
+                                            <a href="{{route('custos.diversos.ShowAnimais', $custo->id)}}"
+                                               class="waves-effect blue btn-small"><i
+                                                    class="material-icons">visibility</i></a>
+                                            <a href="{{route('custos.diversos.editar', $custo->id)}}"
+                                               class="waves-effect blue btn-small"><i
                                                     class="material-icons">edit</i></a>
                                             <button data-content="{{route('custos.diversos.delete', $custo->id)}}"
-                                                    class="btnTableUser btnDelete waves-effect red  btn-small"><i
+                                                    class="btnDelete waves-effect red  btn-small"><i
                                                     class="material-icons">delete</i></button>
                                         </td>
                                     </tr>

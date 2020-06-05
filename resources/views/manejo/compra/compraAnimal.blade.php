@@ -42,7 +42,6 @@
                             <div class="input-field col s12">
                                 <i class="material-icons prefix">wc</i>
                                 <select id="sexo" name="sexo" required>
-                                    <option value="" selected>Escolha o Sexo</option>
                                     <option value="M">Masculino</option>
                                     <option value="F">Feminino</option>
                                 </select>

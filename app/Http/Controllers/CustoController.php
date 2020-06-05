@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Custo;
 use App\Repository\CustosDiversosRepository;
 use App\Repository\CustosVacinasRepository;
 use App\Repository\CustosBaixasRepository;
+use App\Vacina;
 
 class CustoController extends Controller
 {
@@ -33,13 +35,15 @@ class CustoController extends Controller
 
     public function saveDiversos(Request $request){
         $this->custosDiversosRepository->save($request);
-        session()->flash('status', 'Fornecedor Salvo');
+        session()->flash('status', 'Custo Salvo');
         return redirect()->route('custos.diversos.index');
     }
 
-    public function showFormDiversosForEdit($id){
-        $fornecedor = $this->custosDiversosRepository->findById($id);
-        return view('tabelas.fornecedor.fornecedor', compact('fornecedor'));
+    public function EditarDiversos($id){
+        $custo = $this->custosDiversosRepository->findById($id);
+        //dd($custo);
+        $data = $custo->data->format('Y-m-d');
+        return view('custos.diversos.novocusto', compact('custo','data'));
     }
 
     public function deleteDiversos($id){
@@ -49,22 +53,37 @@ class CustoController extends Controller
     }
 
     public function diversosShowAnimais($id){
-
+        $animais = $this->custosDiversosRepository->diversosShowAnimais($id);
+        $custo = Custo::find($id);
+        //dd($animais);
+        return view('custos.diversos.custoanimais', compact('animais','custo'));
     }
 
-    public function animaisShowForm(Request $request , $id){
-
-    }
     ############################################################################
-    public function indexVacinas(Request $request)
+    public function indexVacina(Request $request)
     {
         $custos = $this->custosVacinasRepository->findAll($request);
+        //dd('ok');
         return view('custos.vacinas.index', compact('custos'));
     }
 
-    public function showFormVacinas(){
-        return view('custos.vacinas.novocusto');
+    public function showFormVacina(){
+        $vacinas = Vacina::all();
+        return view('custos.vacinas.novocusto', compact('vacinas'));
     }
+
+    public function saveVacina(Request $request){
+        $this->custosVacinasRepository->save($request);
+        session()->flash('status', 'Custo Salvo');
+        return redirect()->route('custos.vacinas.index');
+    }
+
+    public function deleteVacina($id){
+        $this->custosVacinasRepository->delete($id);
+        session()->flash('status', 'Custo Apagado');
+        return redirect()->route('custos.vacinas.index');
+    }
+
     ##############################################################################
     public function indexBaixas(Request $request)
     {
