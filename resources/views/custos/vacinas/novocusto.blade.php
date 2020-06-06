@@ -12,7 +12,8 @@
                         <a class="btn green white-text right" href="{{route('custos.vacinas.index')}}"><i class="material-icons">arrow_back</i>Voltar</a>
                     </div>
                     <div class="col s12">
-                        <div class="row ">
+                        <div class="row ">                            
+                            <div class="col l2"></div>
                             <div class="col s12 m12 l8 ">
                                 <form class="form-custo" method="POST" action="{{route('custos.vacinas.save')}}">
                                     @csrf

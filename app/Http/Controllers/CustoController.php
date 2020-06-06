@@ -8,6 +8,7 @@ use App\Custo;
 use App\Repository\CustosDiversosRepository;
 use App\Repository\CustosVacinasRepository;
 use App\Repository\CustosBaixasRepository;
+use App\TipoBaixa;
 use App\Vacina;
 
 class CustoController extends Controller
@@ -92,6 +93,19 @@ class CustoController extends Controller
     }
 
     public function showFormBaixas(){
-        return view('custos.baixas.novocusto');
+        $tipo_baixas = TipoBaixa::all();
+        return view('custos.baixas.novocusto',compact('tipo_baixas'));
+    }
+
+    public function saveBaixa(Request $request){
+        $this->custosBaixasRepository->save($request);
+        session()->flash('status', 'Custo Salvo');
+        return redirect()->route('custos.baixas.index');
+    }
+
+    public function deleteBaixas($id){
+        $this->custosBaixasRepository->delete($id);
+        session()->flash('status', 'Custo Apagado');
+        return redirect()->route('custos.baixas.index');
     }
 }

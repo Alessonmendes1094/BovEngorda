@@ -140,12 +140,10 @@ Route::group(['prefix' => 'custos'], function () {
     });
     Route::group(['prefix' => 'baixas'], function () {
         Route::get('/', 'CustoController@indexBaixas')->name('custos.baixas.index'); #index
-        Route::get('/add', 'CustoController@showFormBaixas')->name('custos.baixas.showformcustosbaixas'); #novo custo
-        Route::get('/edit/{id}', 'CustoController@showFormBaixasForEdit')->name('custos.baixas.showFormCustosBaixasForEdit'); #editar custo
+        Route::get('/add', 'CustoController@showFormBaixas')->name('custos.baixas.showFormBaixas'); #novo custo
+        Route::post('/add', 'CustoController@saveBaixa')->name('custos.baixas.save'); #salvar custo
         Route::get('/delelete/{id}', 'CustoController@deleteBaixas')->name('custos.baixas.delete'); #deletar custo
-        Route::post('/add', 'CustoController@saveBaixas')->name('custos.baixas.save'); #salvar custo
         Route::get('/{id}/animais', 'VendaController@BaixasShowAnimais')->name('custos.baixas.ShowAnimais'); #listar animais
-        Route::post('/{id}/form', 'VendaController@animaisShowFormBaixas')->name('custos.baixas.animaisShowForm'); #gravar animais
     });
 });
 
