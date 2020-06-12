@@ -9,7 +9,7 @@
                         <a href="{{route('relatorios.index')}}" class="waves-effect waves-light btn deep-blue">Voltar
                             <i class="material-icons right">reply</i>
                         </a>
-                        <a href="{{route('relatorios.custo_Animal.excel',  ['animais'=>$stringAnimais ,'racas'=>$stringRacas , 'fornecedores'=>$stringFornecedores])}}"
+                        <a href="{{route('relatorios.custo_Animal.excel',  ['animais'=>$stringAnimais ,'racas'=>$stringRacas , 'fornecedores'=>$stringFornecedores , 'compraFornecedor'=>$compraFornecedor])}}"
                            class="btn green right">Baixar Excel</a>
                     </div>
                     <span class="card-title">Custo por Animal</span>

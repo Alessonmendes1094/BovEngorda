@@ -125,4 +125,12 @@ class CompraController extends Controller
 
         return redirect()->route('compra.index');
     }
+
+    public function autocomplete(Request $request){
+        $search = $request->get('fornecedores');
+        $result = Manejo::where('fornecedor_id' , '=', $search)->get();
+        //dd($result);
+
+        return response()->json($result);
+    }
 }

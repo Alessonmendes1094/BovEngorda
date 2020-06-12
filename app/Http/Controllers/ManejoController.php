@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Manejo;
+use App\ManejoAnimais;
 use App\Repository\AnimalRepository;
 use App\Repository\ClienteRepository;
 use App\Repository\FornecedorRepository;
@@ -111,5 +112,13 @@ class ManejoController extends Controller
         session()->flash('status', $respostaImportacao[1]);
 
         return redirect()->route('manejo.index');
+    }
+
+    public function manejoFornecedor(Request $request){
+        $search = $request->get('term');
+        dd($search);
+        $result = Manejo::where('fornecedor_id' , '=', null)->get();
+
+        return response()->json($result);
     }
 }

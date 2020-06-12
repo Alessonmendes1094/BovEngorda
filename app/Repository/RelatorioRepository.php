@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class RelatorioRepository
 {
 
-    public function gmdAnimal($stringAnimais, $stringRacas, $stringFornecedores)
+    public function gmdAnimal($stringAnimais, $stringRacas, $stringFornecedores,$compraFornecedor)
     {
         $animais = '';
         $racas = '';
@@ -41,13 +41,13 @@ class RelatorioRepository
                                  inner join animais on pes.animal_id = animais.id
                                  left join fornecedores on fornecedores.id = animais.id_fornecedor
                                  left join racas on racas.id = animais.id_raca
-                                 where animais.id_tipobaixa is null
+                                 where animais.id_tipobaixa is null and id_manejo_compra = '.$compraFornecedor . '
                                  ' . $animais . ' ' . $racas . ' ' . $fornecedores . '
                                  order by pes.animal_id, pes.data;');
 
     }
 
-    public function gmdAnimalBaixados($stringAnimais, $stringRacas, $stringFornecedores)
+    public function gmdAnimalBaixados($stringAnimais, $stringRacas, $stringFornecedores,$compraFornecedor)
     {
         $animais = '';
         $racas = '';
@@ -79,7 +79,7 @@ class RelatorioRepository
                                  inner join animais on pes.animal_id = animais.id
                                  left join fornecedores on fornecedores.id = animais.id_fornecedor
                                  left join racas on racas.id = animais.id_raca
-                                 where animais.id_tipobaixa is not null
+                                 where animais.id_tipobaixa is not null and id_manejo_compra = '. $compraFornecedor.' 
                                  ' . $animais . ' ' . $racas . ' ' . $fornecedores . '
                                  order by pes.animal_id, pes.data;');
 
@@ -108,7 +108,7 @@ class RelatorioRepository
 
     }
 
-    public function custo_animal($stringRacas, $stringAnimais, $stringFornecedores)
+    public function custo_animal($stringRacas, $stringAnimais, $stringFornecedores,$compraFornecedor)
     {
         $racas1 = '';
         $racas2 = '';
@@ -167,6 +167,7 @@ class RelatorioRepository
                                 inner join racas on racas.id = animais.id_raca
                                 ' . $fornecedores . '
                                 ' . $racas3 . ' ' . $animais3 . '
+                                where id_manejo_compra = '.$compraFornecedor.'
                                 order by brinco , data_pesagem, pesagens.id;  ';
 
         return DB::select($consulta);

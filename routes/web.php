@@ -101,7 +101,8 @@ Route::group(['prefix' => 'manejo'], function () {
         Route::post('/novo/Animal/{id}/manejo', 'CompraController@saveanimais')->name('compra.saveanimais');
         Route::get('/delete/{id}', 'CompraController@delete')->name('compra.delete');
         Route::get('/{id}', 'CompraController@edit')->name('compra.edit');
-
+        Route::get('/fornecedores/autocomplete', 'CompraController@autocomplete')->name('compra.autocomplete');
+        
         Route::get('/add/carregardados', 'CompraController@showFormcarregarDados')->name('compra.showFormcarregarDados');
         Route::post('/add/carregardados', 'CompraController@carregarDados')->name('compra.carregarDados');
         Route::post('/add/importardados', 'CompraController@importarDados')->name('compra.importarDados');
@@ -115,7 +116,7 @@ Route::group(['prefix' => 'manejo'], function () {
         Route::post('/novo/Animal/manejo', 'VendaController@saveanimais')->name('venda.saveanimais');
         Route::get('/delete/{id}', 'VendaController@delete')->name('venda.delete');
         Route::get('/{id}', 'VendaController@edit')->name('venda.edit');
-
+        
         Route::get('/add/carregardados', 'VendaController@showFormcarregarDados')->name('venda.showFormcarregarDados');
         Route::post('/add/carregardados', 'VendaController@carregarDados')->name('venda.carregarDados');
         Route::post('/add/importardados', 'VendaController@importarDados')->name('venda.importarDados');
@@ -159,13 +160,13 @@ Route::group(['prefix' => 'financeiro'], function () {
 Route::group(['prefix' => 'relatorios'], function () {
     Route::get('/', 'RelatoriosControlller@index')->name('relatorios.index');
     Route::post('/gmdadnimal', 'RelatoriosControlller@gmdAnimal')->name('relatorios.gmdAnimal');
-    Route::get('/gmdadnimal/excel/{request}/{req2}/{req3}', 'RelatoriosControlller@gmdAnimalExcel')->name('relatorios.gmdAnimal.excel');
+    Route::get('/gmdadnimal/excel/{request}/{req2}/{req3}/{req4}', 'RelatoriosControlller@gmdAnimalExcel')->name('relatorios.gmdAnimal.excel');
 
     Route::post('/gmdadnimal/baixados', 'RelatoriosControlller@gmdAnimalBaixados')->name('relatorios.gmdAnimal-baixados');
-    Route::get('/gmdadnimal-baixados/excel/{request}/{req2}/{req3}', 'RelatoriosControlller@gmdAnimalExcelBaixados')->name('relatorios.gmdAnimal-baixados.excel');
+    Route::get('/gmdadnimal-baixados/excel/{request}/{req2}/{req3}/{req4}', 'RelatoriosControlller@gmdAnimalExcelBaixados')->name('relatorios.gmdAnimal-baixados.excel');
 
     Route::post('/custo_Animal', 'RelatoriosControlller@custo_Animal')->name('relatorios.custo_Animal');
-    Route::get('/custo_Animal/excel/{request}/{req2}/{req3}', 'RelatoriosControlller@custo_AnimalExcel')->name('relatorios.custo_Animal.excel');
+    Route::get('/custo_Animal/excel/{request}/{req2}/{req3}/{req4}', 'RelatoriosControlller@custo_AnimalExcel')->name('relatorios.custo_Animal.excel');
 
     Route::post('/compras_Animal', 'RelatoriosControlller@compras_Animal')->name('relatorios.compras_Animal');
     Route::get('/compra_Animal/excel/{request}/{req2}/{req3}/{req4}/{req5}', 'RelatoriosControlller@compras_AnimalExcel')->name('relatorios.compras_Animal.excel');
