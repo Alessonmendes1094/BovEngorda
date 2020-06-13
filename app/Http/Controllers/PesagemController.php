@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Pesagem;
 use App\Repository\AnimalRepository;
 use App\Repository\LoteRepository;
 use App\Repository\PesagemRepository;
@@ -35,33 +36,8 @@ class PesagemController extends Controller
     }
 
     public function cadastroPeso(){
-        return view('pesagens.cadastroPeso');
-    }
-    public function listAnimais(Request $request){
-        $animais = $this->animalRepository->findAll($request);
-        $racas = $this->racaRepository->findAll(null);
-        $lotes = $this->loteRepository->findAll(null);
-        return view('pesagens.listAnimais', compact('animais', 'racas', 'lotes'));
-    }
-
-    public function listAnimaisRequest(Request $request){
-        $animaisCheckded =  $request->input('check');
-
-        if(isset($animaisCheckded)){
-            $animais = $this->animalRepository->findAllByCheck($animaisCheckded);
-            $lotes = $this->loteRepository->findAll(null);
-        }else{
-            session()->flash('status', 'ERRO: Nenhum animal selecionado');
-            return redirect()->route('pesagem.listAnimais');
-        }
-
-        return view('pesagens.pesagens', compact('animais', 'lotes'));
-    }
-
-    public function save(Request $request){
-        $this->pesagemRepository->save($request);
-        session()->flash('status', 'Pessagens Salvas com sucesso');
-        return redirect()->route('pesagem.index');
+        $data = Pesagem::orderBy('id','desc')->select('data')->first();
+        return view('pesagens.cadastroPeso', compact('data'));
     }
 
     public function salvar(Request $request){

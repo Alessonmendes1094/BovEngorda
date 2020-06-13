@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Repository;
-
 
 use App\Animal;
 use App\HistoricoLotes;
@@ -26,54 +24,30 @@ class PesagemRepository
             ->paginate(150);
     }
 
-    public function save($request)
-    {
-        $idsAnimais = array_keys($request->input('date'));
-        $arrayRequest = $request->all();
-        foreach ($idsAnimais as $idAnimal) {
-            $pesagem = new Pesagem();
-            $pesagem->data = $arrayRequest["date"][$idAnimal];
-            $pesagem->peso = $arrayRequest["peso"][$idAnimal];
-            $pesagem->animal_id = $idAnimal;
-            $pesagem->save();
-
-            $animal = Animal::find($idAnimal);
-            $lote = $arrayRequest["lote"][$idAnimal];
-
-            $historicoLote = new HistoricoLotes();
-            $historicoLote->data = $pesagem->data;
-            $historicoLote->id_lote = $lote;
-            $historicoLote->id_animal = $animal->id;
-            if ($animal->id_lote != $lote) {
-                $historicoLote->lote_alterado = "S";
-            }
-            $historicoLote->origem = "Pesagem";
-            $historicoLote->id_pesagem = $pesagem->id;
-            $historicoLote->save();
-
-            $animal->id_lote = $lote;
-            $animal->save();
-        }
-    }
-
     public function salvar(Request $request)
     {
-        $req = $request->all();
+        $req               = $request->all();
         $animal_concatenar = $this->animal($request);
-        
+
+        if($animal_concatenar == null){
+            $mensagem[0] = 'erro';
+            $mensagem[1] = 'Brinco não cadastrado!';
+            return $mensagem;
+        }
+
         $peso = $req['peso'];
         $lote = Lote::where('peso_inicial', '<=', $peso)->where('peso_final', '>=', $peso)->first();
         #verifica se o peso informado pertence a algum lote
-        if (!isset($lote)){
+        if (!isset($lote)) {
             $mensagem[0] = 'erro';
             $mensagem[1] = 'Não Encontrado Lote com o peso informado! Verifique o peso, ou cadastro de lotes';
             return $mensagem;
         }
 
         #gera nova pesagem do animal
-        $pesagem = new Pesagem();
-        $pesagem->data = $req['data'];
-        $pesagem->peso = $req['peso'];
+        $pesagem            = new Pesagem();
+        $pesagem->data      = $req['data'];
+        $pesagem->peso      = $req['peso'];
         $pesagem->animal_id = $animal_concatenar->id;
         $pesagem->save();
 
@@ -81,23 +55,23 @@ class PesagemRepository
         $historicoLote = new HistoricoLotes();
 
         $animal = Animal::find($animal_concatenar->id);
-        
+
         #verifica se o lote do animal é diferente do lote que o peso do animal se enquadra
-        if($lote->id <> $animal_concatenar->id_lote){
+        if ($lote->id != $animal_concatenar->id_lote) {
             $animal->id_lote = $lote->id;
             $animal->save();
             $historicoLote->lote_alterado = "S";
         }
         #continua o processo de gravação do historico do lote
-        $historicoLote->data = $req['data'];
-        $historicoLote->id_lote = $animal->id_lote;
-        $historicoLote->id_animal = $animal->id;
-        $historicoLote->origem = "Pesagem";
+        $historicoLote->data       = $req['data'];
+        $historicoLote->id_lote    = $animal->id_lote;
+        $historicoLote->id_animal  = $animal->id;
+        $historicoLote->origem     = "Pesagem";
         $historicoLote->id_pesagem = $pesagem->id;
         $historicoLote->save();
 
         $mensagem[0] = 'status';
-        $mensagem[1] = 'Pesagem do brinco '.$animal->brinco. ' salva com sucesso!';
+        $mensagem[1] = 'Pesagem do brinco ' . $animal->brinco . ' salva com sucesso!';
         return $mensagem;
 
     }
@@ -105,7 +79,7 @@ class PesagemRepository
     public function gmdChart($idAnimal)
     {
         $pesos = Pesagem::where('animal_id', '=', $idAnimal)->orderByRaw('animal_id, data')->get();
-        $gmds = $this->getGMD($pesos);
+        $gmds  = $this->getGMD($pesos);
         $datas = $this->getDatas($pesos);
 //        $pessagens = $this->getPesos($pesos);
 
@@ -114,15 +88,15 @@ class PesagemRepository
 
     public function getGMD($pesos)
     {
-        $gmds = array();
+        $gmds         = array();
         $pesoAnterior = 0;
-        $dataAnteior = 0;
+        $dataAnteior  = 0;
         foreach ($pesos as $peso) {
             try {
                 $gmd = ($peso->peso - $pesoAnterior) / $this->difenrecaDias($dataAnteior, $peso->data);
                 array_push($gmds, $gmd);
                 $pesoAnterior = $peso->peso;
-                $dataAnteior = $peso->data;
+                $dataAnteior  = $peso->data;
             } catch (\Exception $e) {
 
             }
@@ -161,16 +135,16 @@ class PesagemRepository
                 $animal = Animal::where('brinco', '=', $row[$request->input('brinco')])->first();
 
                 if (isset($animal)) {
-                    $pesgem = new Pesagem();
+                    $pesgem            = new Pesagem();
                     $pesgem->animal_id = $animal->id;
-                    $pesgem->peso = $row[$request->input('peso')];
-                    $pesgem->data = Date::excelToDateTimeObject($row[$request->input('data')]);
+                    $pesgem->peso      = $row[$request->input('peso')];
+                    $pesgem->data      = Date::excelToDateTimeObject($row[$request->input('data')]);
 
                     // verefica se existe o lote se não existe cadastro um novo
                     $colunaLote = $request->input('lote');
                     if (isset($colunaLote)) {
-                        $lote = Lote::where('nome', '=', $row[$colunaLote])->first();
-                        $lote = is_null($lote) ? new Lote() : $lote;
+                        $lote       = Lote::where('nome', '=', $row[$colunaLote])->first();
+                        $lote       = is_null($lote) ? new Lote() : $lote;
                         $lote->nome = $row[$colunaLote];
                         $lote->save();
 
@@ -180,11 +154,11 @@ class PesagemRepository
                     $animal->save();
                     $pesgem->save();
 
-                    $historicoLote = new HistoricoLotes();
-                    $historicoLote->data = $pesgem->data;
-                    $historicoLote->id_lote = $lote->id;
-                    $historicoLote->id_animal = $animal->id;
-                    $historicoLote->origem = "Pesagem_Imp";
+                    $historicoLote             = new HistoricoLotes();
+                    $historicoLote->data       = $pesgem->data;
+                    $historicoLote->id_lote    = $lote->id;
+                    $historicoLote->id_animal  = $animal->id;
+                    $historicoLote->origem     = "Pesagem_Imp";
                     $historicoLote->id_pesagem = $pesgem->id;
                     if ($lote->id != $animal->id_lote) {
                         $historicoLote->lote_alterado = "S";
@@ -237,28 +211,35 @@ class PesagemRepository
     {
         $this->validaAnimalPeso($req);
         $this->validaPeso($req);
-        $animais = DB::select("select * , concat('Brinco: ',brinco,' - ',nome) as concatenar from animais ");
 
-        foreach ($animais as $ani) {
-            if ($ani->concatenar == $req->animal) {
-                $animal_concatenar = $ani;
-                break;
+        $animal_concatenar = Animal::where('brinco', '=', $req->animal)->first();
+
+        
+        if ($animal_concatenar == null) {
+            $animais = DB::select("select * , concat('Brinco: ',brinco,' - ',nome) as concatenar from animais ");
+
+            foreach ($animais as $ani) {
+                if ($ani->concatenar == $req->animal) {
+                    $animal_concatenar = $ani;
+                    break;
+                }
             }
         }
 
+        
         return $animal_concatenar;
     }
 
     public function validaAnimalPeso(Request $request)
     {
         $dosagem = $request->all();
-        $valid = [
-            'animal' => 'required|min:8',
+        $valid   = [
+            'animal' => 'required',
         ];
         $messages = [
             'required' => 'O campo é de preenchimento obrigatório!',
-            'min' => 'Animal não informado. Verifique!',
-            'max' => 'Animal não informado. Verifique!',
+            'min'      => 'Animal não informado. Verifique!',
+            'max'      => 'Animal não informado. Verifique!',
         ];
 
         $validacao = Validator($dosagem, $valid, $messages)->validate();
@@ -268,13 +249,13 @@ class PesagemRepository
     public function validaPeso(Request $request)
     {
         $dosagem = $request->all();
-        $valid = [
+        $valid   = [
             'peso' => 'required|numeric|min:10|max:2000',
         ];
         $messages = [
             'required' => 'O campo é de preenchimento obrigatório!',
-            'min' => 'Peso incorreto! Peso mínimo 10 Kg',
-            'max' => 'Peso incorreto! Peso máximo 2000 Kg',
+            'min'      => 'Peso incorreto! Peso mínimo 10 Kg',
+            'max'      => 'Peso incorreto! Peso máximo 2000 Kg',
         ];
 
         $validacao = Validator($dosagem, $valid, $messages)->validate();

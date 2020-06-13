@@ -18,7 +18,7 @@
                                         <div class="input-field col s12">
                                             <i class="material-icons prefix">date_range</i>
                                             <input type="date" id="data" name="data"
-                                                   class="" >
+                                                   class="validate" value="{!! isset($data) ? $data->data : null !!}">
                                             <label for="data">Data</label>
                                             @error('data')
                                             <span class="helper-text" style="color:red">{{ $message }}</span>
@@ -27,7 +27,7 @@
                                         <div class="input-field col s12">
                                             <i class="material-icons prefix">fingerprint</i>
                                             <input type="text" id="autocomplete-input" name="animal"
-                                                   class="autocomplete" autocomplete="off">
+                                                   class="autocomplete" autocomplete="off" >
                                             <label for="autocomplete-input">Brinco</label>
                                             @error('animal')
                                             <span class="helper-text" style="color:red">{{ $message }}</span>

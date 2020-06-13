@@ -79,8 +79,6 @@ Route::group(['prefix' => 'pesagem'], function () {
     Route::get('/', 'PesagemController@index')->name('pesagem.index');
     Route::get('/listAnimais', 'PesagemController@listAnimais')->name('pesagem.listAnimais');
     Route::get('/cadastroPeso', 'PesagemController@cadastroPeso')->name('pesagem.cadastroPeso');
-    Route::post('/listAnimais', 'PesagemController@listAnimaisRequest')->name('pesagem.listAnimaisRequest');
-    Route::post('/add', 'PesagemController@save')->name('pesagem.save');
     Route::post('/salvar', 'PesagemController@salvar')->name('pesagem.salvar');
     Route::get('/delelete/{id}', 'PesagemController@delete')->name('pesagem.delete');
 
