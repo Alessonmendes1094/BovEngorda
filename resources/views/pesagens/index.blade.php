@@ -43,6 +43,21 @@
                                 </select>
                                 <label>Sexo</label>
                             </div>
+                            <div class="input-field col s12">
+                                <select name="fornecedor">
+                                    <option value="" selected>Escolha o Fornecedor</option>
+                                    @foreach($fornecedores as $fornecedor)
+                                        <option @if(request()->query('fornecedor') == $fornecedor->id) selected @endif 
+                                            value="{{$fornecedor->id}}">{{$fornecedor->nome}}</option>
+                                    @endforeach
+                                </select>
+                                <label>Fornecedor de Compra</label>
+                            </div>
+                            <div class="input-field col s12">
+                                <input type="date" id="data" name="data"
+                                                   class="validate" value="{!! isset($data) ? $data->data : null !!}">
+                                <label>Data de Compra</label>
+                            </div>
                             <div class="col s12 right">
                                 <button class="btn blue-grey right"><i class="material-icons right">search</i> Pesquisar
                                 </button>

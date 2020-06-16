@@ -22,7 +22,7 @@
                             </div>
                             <div class="input-field col s12">
                                 <i class="material-icons prefix">fitness_center</i>
-                                <input id="peso" name="peso" type="number" class="validate" value="{!! isset($animal) ? $animal->peso : old('peso') !!}" required>
+                                <input id="peso" name="peso" type="number" class="validate" step="0.001" value="{!! isset($animal) ? $animal->peso : old('peso') !!}" required>
                                 <label for="peso">Peso/Kg</label>
                                 @error('peso')
                                 <span class="helper-text" style="color:red">{{ $message }}</span>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Fornecedor;
 use App\Pesagem;
 use App\Repository\AnimalRepository;
 use App\Repository\LoteRepository;
@@ -32,7 +33,8 @@ class PesagemController extends Controller
         $pesagens = $this->pesagemRepository->findAll($request);
         $racas = $this->racaRepository->findAll(null);
         $lotes = $this->loteRepository->findAll(null);
-        return view('pesagens.index', compact('pesagens', 'racas', 'lotes'));
+        $fornecedores = Fornecedor::all();
+        return view('pesagens.index', compact('pesagens', 'racas', 'lotes','fornecedores'));
     }
 
     public function cadastroPeso(){

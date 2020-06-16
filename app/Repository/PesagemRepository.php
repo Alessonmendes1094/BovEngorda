@@ -18,6 +18,7 @@ class PesagemRepository
         return Pesagem::select('pesagens.animal_id', 'pesagens.data', 'pesagens.peso', 'pesagens.id as pesagen_id', 'animais.brinco', 'racas.nome as raca', 'lotes.nome as lote')
             ->where($this->buildFiltro($request))
             ->join('animais', 'pesagens.animal_id', '=', 'animais.id')
+            ->leftJoin('manejos','animais.id_manejo_compra','=','manejos.id')
             ->leftJoin('racas', 'animais.id_raca', '=', 'racas.id')
             ->leftJoin('lotes', 'animais.id_lote', '=', 'lotes.id')
             ->orderByRaw('pesagens.animal_id, pesagens.data')
@@ -203,6 +204,16 @@ class PesagemRepository
         if (isset($sexo)) {
             array_push($filtro, ['animais.sexo', '=', $sexo]);
         }
+        $fornecedor = $request->input("fornecedor");
+        if (isset($fornecedor)) {
+            array_push($filtro, ['animais.id_fornecedor', '=', $fornecedor]);
+        }
+        $data = $request->input("data");
+        if (isset($data)) {
+            array_push($filtro, ['manejos.data', '=', $data]);
+            array_push($filtro, ['manejos.tipo', '=', 'compra']);
+        }
+        
 
         return $filtro;
     }

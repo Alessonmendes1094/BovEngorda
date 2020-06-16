@@ -22,10 +22,11 @@ class CompraRepository
         return Manejo::
             leftjoin('manejos_animais', 'manejos_animais.manejo_id', '=', 'manejos.id')
             ->leftjoin('fornecedores', 'fornecedores.id', '=', 'manejos.fornecedor_id')
-            ->select('manejos.id', 'fornecedores.nome as fornecedor', 'data', 'tipo', DB::raw('count(animal_id) as qtdAnimais, sum(valor) as valorTotals'))
+            ->leftjoin('pesagens','pesagem_id','=','pesagens.id')
+            ->select('manejos.id', 'fornecedores.nome as fornecedor', 'manejos.data', 'tipo', DB::raw('count(manejos_animais.animal_id) as qtdAnimais'), 'valorkg' , DB::raw('sum(peso) as total_peso'))
             ->where($this->buildFiltro($request))
             ->where('tipo', '=', 'compra')
-            ->groupBy('manejos.id', 'fornecedores.nome', 'data', 'tipo')
+            ->groupBy('manejos.id', 'fornecedores.nome', 'manejos.data', 'tipo')
             ->orderBy('data', 'desc')
             ->paginate(25);
     }
@@ -35,13 +36,19 @@ class CompraRepository
         $manejo = Manejo::find($request->input('id'));
         if (!isset($manejo)) {
             $manejo = new Manejo();
+        }else if(isset($manejo)){
+            $editar = 'true';
         }
 
         $manejo->data          = $request->input('data');
         $manejo->tipo          = 'compra';
         $manejo->fornecedor_id = $request->input('fornecedor');
-        $manejo->valorkg       = $request->input('valorkg');
+        $manejo->valorkg       = $request->input('valor');
         $manejo->save();
+
+        if(isset($editar)){
+            $this->calculaPreco($manejo);
+        }
 
         return $manejo;
     }
@@ -66,6 +73,7 @@ class CompraRepository
         $newanimal->id_lote          = $lote->id;
         $newanimal->id_manejo_compra = $manejo->id;
         $newanimal->save();
+
         return $newanimal;
 
     }
@@ -104,9 +112,35 @@ class CompraRepository
         $manejoAnimal->animal_id  = $animalSaved->id;
         $manejoAnimal->pesagem_id = $pesagemSaved->id;
         $manejoAnimal->manejo_id  = $manejo->id;
-        $manejoAnimal->valor      = ($animal['peso'] * $manejo->valorkg);
+        $manejoAnimal->valor      = 0;
         $manejoAnimal->save();
 
+        #calcula a qtd de animais e divide o preço total.
+        $this->calculaPreco($manejo);
+
+    }
+
+    public function calculaPreco( $manejo){
+        $qtd = ManejoAnimais::join('pesagens','pesagens.id','=','pesagem_id')
+        ->where('manejo_id','=',$manejo->id)->sum('peso');
+
+        $manejos = ManejoAnimais::join('pesagens','pesagens.id','=','manejos_animais.pesagem_id')
+        ->where('manejo_id','=',$manejo->id)->select('manejos_animais.id','pesagens.peso')->get();
+
+        $value = $manejo->valorkg / $qtd; #calcula o valor do KG, porém o valor fica vom inumerar casas decimais
+        
+        $valor = floor($value*pow(10,4)+0.2)/pow(10,4); #arrenda o valor para 2 casas decimais
+        
+        
+        //dd($manejos, $qtd);
+        foreach ($manejos as $man){
+            $manejo_animal = ManejoAnimais::find($man->id);
+            $valor_kg = $valor * $man->peso;            
+            $manejo_animal->valor = $valor_kg;
+            $manejo_animal->save();
+
+            //dd($manejo,$qtd,$value,$valor,$man,$valor_kg,$manejo_animal);
+        }
     }
 
     private function savePesagem($request, $manejo, $animalSaved)

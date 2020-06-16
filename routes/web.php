@@ -93,12 +93,11 @@ Route::group(['prefix' => 'manejo'], function () {
         Route::get('/', 'CompraController@index')->name('compra.index');
         Route::get('/novo/', 'CompraController@novaCompra')->name('compra.novaCompra');
         Route::get('/edit/manejo/{id}', 'CompraController@edit')->name('compra.edit');
-        Route::get('/edit/manejo/show/{id}', 'CompraController@showanimais')->name('compra.showanimais');
+        Route::get('/manejo/show/{id}', 'CompraController@showanimais')->name('compra.showanimais');
         Route::post('/novo/manejo', 'CompraController@save')->name('compra.save');
         Route::get('/novo/Animal/{id}', 'CompraController@novoanimal')->name('compra.novoanimal');
         Route::post('/novo/Animal/{id}/manejo', 'CompraController@saveanimais')->name('compra.saveanimais');
         Route::get('/delete/{id}', 'CompraController@delete')->name('compra.delete');
-        Route::get('/{id}', 'CompraController@edit')->name('compra.edit');
         Route::get('/fornecedores/autocomplete', 'CompraController@autocomplete')->name('compra.autocomplete');
         
         Route::get('/add/carregardados', 'CompraController@showFormcarregarDados')->name('compra.showFormcarregarDados');
