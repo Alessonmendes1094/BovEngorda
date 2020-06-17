@@ -49,11 +49,14 @@ class RelatoriosControlller extends Controller
 
     public function gmdAnimal(Request $request)
     {
+        
         $animais = $request->animais;
         $racas = $request->racas;
+        $lotes = $request->lotes;
         $fornecedores = $request->fornecedores;
         $stringAnimais = '';
         $stringRacas = '';
+        $stringLotes = '';
         $stringFornecedores = '';
         $compraFornecedor = $request->compra_fornecedor[0];
 
@@ -83,6 +86,19 @@ class RelatoriosControlller extends Controller
             }
         }
 
+        if (in_array("Todo$", $lotes)) {
+            $stringLotes = 'Todo$';
+        } else {
+            $fimlotes = end($lotes);
+            foreach ($lotes as $lote) {
+                if ($fimlotes == $lote) {
+                    $stringLotes = $stringLotes . $lote;
+                } else {
+                    $stringLotes = $stringLotes . $lote . ',';
+                }
+            }
+        }
+
         if (in_array("Todo$", $fornecedores)) {
             $stringFornecedores = 'Todo$';
         } else {
@@ -96,14 +112,14 @@ class RelatoriosControlller extends Controller
             }
         }
 
-        //dd($animais, $stringAnimais,$fornecedores,$stringFornecedores);
-        $dados = $this->relatorioRepository->gmdAnimal($stringAnimais, $stringRacas, $stringFornecedores,$compraFornecedor);
-        return view('relatorios.gmd_animal', compact('dados', 'stringAnimais', 'stringRacas', 'stringFornecedores','compraFornecedor'));
+        
+        $dados = $this->relatorioRepository->gmdAnimal($stringAnimais, $stringRacas, $stringLotes, $stringFornecedores,$compraFornecedor);
+        return view('relatorios.gmd_animal', compact('dados', 'stringAnimais', 'stringRacas','stringLotes', 'stringFornecedores','compraFornecedor'));
     }
 
-    public function gmdAnimalExcel($animais, $fornecedor, $racas,$compraFornecedor)
+    public function gmdAnimalExcel($animais, $fornecedor, $racas,$lotes,$compraFornecedor)
     {
-        $dados = $this->relatorioRepository->gmdAnimal($animais, $fornecedor, $racas,$compraFornecedor);
+        $dados = $this->relatorioRepository->gmdAnimal($animais, $fornecedor, $racas,$lotes,$compraFornecedor);
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 

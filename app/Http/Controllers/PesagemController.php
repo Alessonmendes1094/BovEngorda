@@ -45,7 +45,7 @@ class PesagemController extends Controller
     public function salvar(Request $request){
         $validacao = $this->pesagemRepository->salvar($request);
         session()->flash($validacao[0], $validacao[1]);
-        return view('pesagens.cadastroPeso');
+        return redirect()->route('pesagem.cadastroPeso');
     }
 
     public function delete($id){

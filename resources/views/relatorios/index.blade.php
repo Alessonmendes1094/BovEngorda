@@ -51,6 +51,16 @@
                             <label for="raca">Raças</label>
                         </div>
                         <div class="input-field col s12">
+                            <i class="material-icons prefix">pets</i>
+                            <select id="lote" multiple name="lotes[]" required>
+                                <option value="Todo$" selected>Todos</option>
+                                @foreach($lotes as $lote)
+                                <option value="{{$lote->id}}">{{$lote->nome}}</option>
+                                @endforeach
+                            </select>
+                            <label for="lote">Lote</label>
+                        </div>
+                        <div class="input-field col s12">
                             <i class="material-icons prefix">person</i>
                             <select id="fornecedor" class="forn" name="fornecedores[]" required>
                                 <option value="" selected disabled>Escolha os Fornecedores</option>

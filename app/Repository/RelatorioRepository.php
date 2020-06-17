@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class RelatorioRepository
 {
 
-    public function gmdAnimal($stringAnimais, $stringRacas, $stringFornecedores,$compraFornecedor)
+    public function gmdAnimal($stringAnimais, $stringRacas,$stringLotes, $stringFornecedores,$compraFornecedor)
     {
         $animais = '';
         $racas = '';
@@ -21,6 +21,10 @@ class RelatorioRepository
 
         if ($stringRacas <> 'Todo$') {
             $racas = 'and animais.id_raca in (' . $stringRacas . ')';
+        }
+
+        if ($stringLotes <> 'Todo$') {
+            $lotes = 'and animais.id_lote in (' . $stringLotes . ')';
         }
 
         if ($stringFornecedores <> 'Todo$') {
@@ -42,7 +46,7 @@ class RelatorioRepository
                                  left join fornecedores on fornecedores.id = animais.id_fornecedor
                                  left join racas on racas.id = animais.id_raca
                                  where animais.id_tipobaixa is null and id_manejo_compra = '.$compraFornecedor . '
-                                 ' . $animais . ' ' . $racas . ' ' . $fornecedores . '
+                                 ' . $animais . ' ' . $racas . ' ' . $lotes . ' ' . $fornecedores . '
                                  order by pes.animal_id, pes.data;');
 
     }

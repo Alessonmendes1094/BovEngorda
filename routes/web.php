@@ -157,7 +157,7 @@ Route::group(['prefix' => 'financeiro'], function () {
 Route::group(['prefix' => 'relatorios'], function () {
     Route::get('/', 'RelatoriosControlller@index')->name('relatorios.index');
     Route::post('/gmdadnimal', 'RelatoriosControlller@gmdAnimal')->name('relatorios.gmdAnimal');
-    Route::get('/gmdadnimal/excel/{request}/{req2}/{req3}/{req4}', 'RelatoriosControlller@gmdAnimalExcel')->name('relatorios.gmdAnimal.excel');
+    Route::get('/gmdadnimal/excel/{request}/{req2}/{req3}/{req4}/{req5}', 'RelatoriosControlller@gmdAnimalExcel')->name('relatorios.gmdAnimal.excel');
 
     Route::post('/gmdadnimal/baixados', 'RelatoriosControlller@gmdAnimalBaixados')->name('relatorios.gmdAnimal-baixados');
     Route::get('/gmdadnimal-baixados/excel/{request}/{req2}/{req3}/{req4}', 'RelatoriosControlller@gmdAnimalExcelBaixados')->name('relatorios.gmdAnimal-baixados.excel');
