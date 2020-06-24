@@ -48,7 +48,7 @@ class RelatorioRepository
                                        (select max(sub.data) from pesagens as sub where sub.animal_id = pes.animal_id and sub.data < pes.data group by sub.animal_id) as data_anterior,
                                        DATEDIFF(pes.data, (select max(sub.data) from pesagens as sub where sub.animal_id = pes.animal_id and sub.data < pes.data group by sub.animal_id)) as dif_dias,
                                        pes.peso - (select aux.peso from pesagens as aux where aux.animal_id = pes.animal_id and aux.data =
-                                            (select max(sub.data) from pesagens as sub where sub.animal_id = pes.animal_id and sub.data < pes.data group by sub.animal_id))	 as diff_peso
+                                            (select max(sub.data) from pesagens as sub where sub.animal_id = pes.animal_id and sub.data < pes.data group by sub.animal_id)limit 1)	 as diff_peso
                                     from pesagens as pes
                                     inner join historicos_lotes on pes.id = id_pesagem
                                  inner join animais on pes.animal_id = animais.id
