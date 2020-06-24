@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Repository\AnimalRepository;
-use App\Repository\RelatorioRepository;
+use App\Repository\ClienteRepository;
 use App\Repository\FornecedorRepository;
 use App\Repository\LoteRepository;
-use App\Repository\ClienteRepository;
-use App\Repository\ManejoRepository;
 use App\Repository\RacaRepository;
+use App\Repository\RelatorioRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -28,37 +26,38 @@ class RelatoriosControlller extends Controller
     public function __construct()
     {
         $this->fornecedorRepository = new FornecedorRepository();
-        $this->animalRepository = new AnimalRepository();
-        $this->loteRepository = new LoteRepository();
-        $this->racaRepository = new RacaRepository();
+        $this->animalRepository     = new AnimalRepository();
+        $this->loteRepository       = new LoteRepository();
+        $this->racaRepository       = new RacaRepository();
         #$this->manejoRepository = new ManejoRepository();
         $this->relatorioRepository = new RelatorioRepository();
-        $this->clienteRepository = new ClienteRepository();
+        $this->clienteRepository   = new ClienteRepository();
         $this->middleware('auth');
     }
 
     public function index()
     {
         $fornecedores = $this->fornecedorRepository->All();
-        $animais = $this->animalRepository->All();
-        $racas = $this->racaRepository->All();
-        $lotes = $this->loteRepository->All();
-        $clientes = $this->clienteRepository->All();
+        $animais      = $this->animalRepository->All();
+        $racas        = $this->racaRepository->All();
+        $lotes        = $this->loteRepository->All();
+        $clientes     = $this->clienteRepository->All();
         return view('relatorios.index', compact('fornecedores', 'animais', 'racas', 'lotes', 'clientes'));
     }
 
     public function gmdAnimal(Request $request)
     {
-        
-        $animais = $request->animais;
-        $racas = $request->racas;
-        $lotes = $request->lotes;
-        $fornecedores = $request->fornecedores;
-        $stringAnimais = '';
-        $stringRacas = '';
-        $stringLotes = '';
+
+        $animais            = $request->animais;
+        $racas              = $request->racas;
+        $lotes              = $request->lotes;
+        $fornecedores       = $request->fornecedores;
+        $compras            = $request->compra_fornecedor;
+        $stringAnimais      = '';
+        $stringRacas        = '';
+        $stringLotes        = '';
         $stringFornecedores = '';
-        $compraFornecedor = $request->compra_fornecedor[0];
+        $compraFornecedor   = '';
 
         if (in_array("Todo$", $animais)) {
             $stringAnimais = 'Todo$';
@@ -99,7 +98,7 @@ class RelatoriosControlller extends Controller
             }
         }
 
-        if (in_array("Todo$", $fornecedores)) {
+        if ($fornecedores == null) {
             $stringFornecedores = 'Todo$';
         } else {
             $fimFornecedores = end($fornecedores);
@@ -112,39 +111,69 @@ class RelatoriosControlller extends Controller
             }
         }
 
-        
-        $dados = $this->relatorioRepository->gmdAnimal($stringAnimais, $stringRacas, $stringLotes, $stringFornecedores,$compraFornecedor);
-        return view('relatorios.gmd_animal', compact('dados', 'stringAnimais', 'stringRacas','stringLotes', 'stringFornecedores','compraFornecedor'));
+        if ($compras == null) {
+            $compraFornecedor = 'Todo$';
+        } else {
+            $fimcompras = end($compras);
+            foreach ($compras as $compra) {
+                if ($fimcompras == $compra) {
+                    $compraFornecedor = $compraFornecedor . $compra;
+                } else {
+                    $compraFornecedor = $compraFornecedor . $compra . ',';
+                }
+            }
+        }
+
+        $dados = $this->relatorioRepository->gmdAnimal($stringAnimais, $stringRacas, $stringLotes, $stringFornecedores, $compraFornecedor);
+        return view('relatorios.gmd_animal', compact('dados', 'stringAnimais', 'stringRacas', 'stringLotes', 'stringFornecedores', 'compraFornecedor'));
     }
 
-    public function gmdAnimalExcel($animais, $fornecedor, $racas,$lotes,$compraFornecedor)
+    public function gmdAnimalExcel($animais, $fornecedor, $racas, $lotes, $compraFornecedor)
     {
-        $dados = $this->relatorioRepository->gmdAnimal($animais, $fornecedor, $racas,$lotes,$compraFornecedor);
+        $dados       = $this->relatorioRepository->gmdAnimal($animais, $racas, $lotes, $fornecedor, $compraFornecedor);
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $sheet       = $spreadsheet->getActiveSheet();
 
         foreach (range('A', 'G') as $columnID) {
             $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
         }
         $x = 1;
         $sheet->setCellValue('A' . $x, "Brinco");
-        $sheet->setCellValue('B' . $x, "Fornecedor");
-        $sheet->setCellValue('C' . $x, "Racao");
-        $sheet->setCellValue('D' . $x, "Data");
-        $sheet->setCellValue('E' . $x, "Peso");
-        $sheet->setCellValue('F' . $x, "GMD");
+        $sheet->setCellValue('B' . $x, "Data");
+        $sheet->setCellValue('C' . $x, "Peso");
+        $sheet->setCellValue('D' . $x, "Dif Dias");
+        $sheet->setCellValue('E' . $x, "GMD");
         $x++;
-        foreach ($dados as $get) {
 
-            $sheet->setCellValue('A' . $x, $get->brinco);
-            $sheet->setCellValue('B' . $x, $get->fornecedor);
-            $sheet->setCellValue('C' . $x, $get->raca);
-            $sheet->setCellValue('D' . $x, date('d/m/Y', strtotime($get->data)));
-            $sheet->setCellValue('E' . $x, $get->peso);
-            if (isset($get->dif_dias) and isset($get->diff_peso)) {
-                $sheet->setCellValue('F' . $x, number_format($get->diff_peso / $get->dif_dias, 2, ',', ' '));
+        $animal = 0;
+        $letra  = '';
+        $compra = 0;
+        foreach ($dados as $get) {
+            if ($animal === 0 or $animal != $get->animal_id) {
+                if ($animal != 0) {
+                    $x++;
+                }
+                if ($compra != $get->id_manejo_compra) {  //DEFINE LINHA DE COMPRA DO FORNECEDOR
+                    $sheet->setCellValue('A' . $x, 'Compra do fornecedor "'.$get->fornecedor.'" do dia "'.date('d/m/Y', strtotime($get->data_compra)).'"');
+                    $x++;
+                    $compra = $get->id_manejo_compra;
+                }
+                $letra = 'A';
+                $sheet->setCellValue($letra . $x, $get->brinco);
+                $animal = $get->animal_id;
             }
-            $x++;
+            if($animal === $get->animal_id){ //GERA REGISTROS DE PESAGENS DOS ANIMAIS
+                ++$letra;
+                $sheet->setCellValue($letra . $x, date('d/m/Y', strtotime($get->data)));
+                ++$letra;
+                $sheet->setCellValue($letra . $x, $get->peso);
+                ++$letra;
+                $sheet->setCellValue($letra . $x, $get->dif_dias);
+                ++$letra;
+                if (isset($get->dif_dias) and isset($get->diff_peso)) {
+                    $sheet->setCellValue($letra . $x, number_format($get->diff_peso / $get->dif_dias, 2, ',', ' '));
+                }
+            }
         }
 
         $writer = new Xlsx($spreadsheet);
@@ -154,19 +183,19 @@ class RelatoriosControlller extends Controller
         $content = ob_get_contents();
         ob_end_clean();
 
-        Storage::put("myfile.xlsx", $content);
-        return Storage::download('myfile.xlsx');
+        Storage::put("gmdAnimais.xlsx", $content);
+        return Storage::download('gmdAnimais.xlsx');
     }
 
     public function gmdAnimalBaixados(Request $request)
     {
-        $animais = $request->animais;
-        $racas = $request->racas;
-        $fornecedores = $request->fornecedores;
-        $stringAnimais = '';
-        $stringRacas = '';
+        $animais            = $request->animais;
+        $racas              = $request->racas;
+        $fornecedores       = $request->fornecedores;
+        $stringAnimais      = '';
+        $stringRacas        = '';
         $stringFornecedores = '';
-        $compraFornecedor = $request->compra_fornecedor[0];
+        $compraFornecedor   = $request->compra_fornecedor[0];
 
         if (in_array("Todo$", $animais)) {
             $stringAnimais = 'Todo$';
@@ -208,15 +237,15 @@ class RelatoriosControlller extends Controller
         }
 
         //dd($animais, $stringAnimais,$fornecedores,$stringFornecedores);
-        $dados = $this->relatorioRepository->gmdAnimalBaixados($stringAnimais, $stringRacas, $stringFornecedores,$compraFornecedor);
-        return view('relatorios.gmd_animal_baixados', compact('dados', 'stringAnimais', 'stringRacas', 'stringFornecedores','compraFornecedor'));
+        $dados = $this->relatorioRepository->gmdAnimalBaixados($stringAnimais, $stringRacas, $stringFornecedores, $compraFornecedor);
+        return view('relatorios.gmd_animal_baixados', compact('dados', 'stringAnimais', 'stringRacas', 'stringFornecedores', 'compraFornecedor'));
     }
 
-    public function gmdAnimalExcelBaixados($animais, $fornecedor, $racas,$compraFornecedor)
+    public function gmdAnimalExcelBaixados($animais, $fornecedor, $racas, $compraFornecedor)
     {
-        $dados = $this->relatorioRepository->gmdAnimalBaixados($animais, $fornecedor, $racas,$compraFornecedor);
+        $dados       = $this->relatorioRepository->gmdAnimalBaixados($animais, $fornecedor, $racas, $compraFornecedor);
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $sheet       = $spreadsheet->getActiveSheet();
 
         foreach (range('A', 'G') as $columnID) {
             $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
@@ -255,13 +284,13 @@ class RelatoriosControlller extends Controller
 
     public function custo_Animal(Request $request)
     {
-        $racas = $request->racas;
-        $stringRacas = '';
-        $animais = $request->animais;
-        $stringAnimais = '';
-        $fornecedores = $request->fornecedores;
+        $racas              = $request->racas;
+        $stringRacas        = '';
+        $animais            = $request->animais;
+        $stringAnimais      = '';
+        $fornecedores       = $request->fornecedores;
         $stringFornecedores = '';
-        $compraFornecedor = $request->compra_fornecedor[0];
+        $compraFornecedor   = $request->compra_fornecedor[0];
 
         if (in_array("Todo$", $racas)) {
             $stringRacas = 'Todo$';
@@ -302,16 +331,16 @@ class RelatoriosControlller extends Controller
             }
         }
 
-        $dados = $this->relatorioRepository->custo_animal($stringRacas, $stringAnimais, $stringFornecedores , $compraFornecedor);
-        return view('relatorios.custo_animal', compact('dados', 'stringRacas', 'stringAnimais', 'stringFornecedores','compraFornecedor'));
+        $dados = $this->relatorioRepository->custo_animal($stringRacas, $stringAnimais, $stringFornecedores, $compraFornecedor);
+        return view('relatorios.custo_animal', compact('dados', 'stringRacas', 'stringAnimais', 'stringFornecedores', 'compraFornecedor'));
     }
 
-    public function custo_AnimalExcel($animais, $fornecedor, $racas,$compraFornecedor)
+    public function custo_AnimalExcel($animais, $fornecedor, $racas, $compraFornecedor)
     {
-        $dados = $this->relatorioRepository->custo_animal($animais, $fornecedor, $racas ,$compraFornecedor);
+        $dados = $this->relatorioRepository->custo_animal($animais, $fornecedor, $racas, $compraFornecedor);
         //dd($dados);
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $sheet       = $spreadsheet->getActiveSheet();
 
         foreach (range('A', 'G') as $columnID) {
             $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
@@ -337,7 +366,6 @@ class RelatoriosControlller extends Controller
             $sheet->setCellValue('G' . $x, $get->tipo);
             $sheet->setCellValue('H' . $x, $get->manejo_valor);
 
-
             $x++;
         }
 
@@ -354,13 +382,13 @@ class RelatoriosControlller extends Controller
 
     public function compras_Animal(Request $request)
     {
-        $animais = $request->animais;
-        $racas = $request->racas;
-        $fornecedores = $request->fornecedores;
-        $dataini = $request->dataini;
-        $datafim = $request->datafim;
-        $stringAnimais = '';
-        $stringRacas = '';
+        $animais            = $request->animais;
+        $racas              = $request->racas;
+        $fornecedores       = $request->fornecedores;
+        $dataini            = $request->dataini;
+        $datafim            = $request->datafim;
+        $stringAnimais      = '';
+        $stringRacas        = '';
         $stringFornecedores = '';
 
         if ($dataini === null) {
@@ -419,7 +447,7 @@ class RelatoriosControlller extends Controller
         $dados = $this->relatorioRepository->compras_Animal($animais, $fornecedor, $racas, $dataini, $datafim);
         //dd($dados);
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $sheet       = $spreadsheet->getActiveSheet();
 
         foreach (range('A', 'G') as $columnID) {
             $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
@@ -433,8 +461,8 @@ class RelatoriosControlller extends Controller
         $sheet->setCellValue('F' . $x, "Peso");
         $sheet->setCellValue('G' . $x, "Total");
         $x++;
-        $i = 1;
-        $end = end($dados);
+        $i     = 1;
+        $end   = end($dados);
         $total = 0;
         foreach ($dados as $dado) {
 
@@ -446,7 +474,7 @@ class RelatoriosControlller extends Controller
             $sheet->setCellValue('F' . $x, $dado->peso);
             $sheet->setCellValue('G' . $x, $dado->valor);
 
-            $i = $i + 1;
+            $i     = $i + 1;
             $total = $total + $dado->valor;
             $x++;
             if ($end == $dado) {
@@ -467,13 +495,13 @@ class RelatoriosControlller extends Controller
 
     public function vendas_Animal(Request $request)
     {
-        $animais = $request->animais;
-        $racas = $request->racas;
-        $clientes = $request->clientes;
-        $dataini = $request->dataini;
-        $datafim = $request->datafim;
-        $stringAnimais = '';
-        $stringRacas = '';
+        $animais        = $request->animais;
+        $racas          = $request->racas;
+        $clientes       = $request->clientes;
+        $dataini        = $request->dataini;
+        $datafim        = $request->datafim;
+        $stringAnimais  = '';
+        $stringRacas    = '';
         $stringClientes = '';
 
         if ($dataini === null) {
@@ -532,7 +560,7 @@ class RelatoriosControlller extends Controller
         $dados = $this->relatorioRepository->vendas_Animal($animais, $clientes, $racas, $dataini, $datafim);
         //dd($dados);
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $sheet       = $spreadsheet->getActiveSheet();
 
         foreach (range('A', 'G') as $columnID) {
             $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
@@ -546,8 +574,8 @@ class RelatoriosControlller extends Controller
         $sheet->setCellValue('F' . $x, "Peso");
         $sheet->setCellValue('G' . $x, "Total");
         $x++;
-        $i = 1;
-        $end = end($dados);
+        $i     = 1;
+        $end   = end($dados);
         $total = 0;
         foreach ($dados as $dado) {
 
@@ -559,7 +587,7 @@ class RelatoriosControlller extends Controller
             $sheet->setCellValue('F' . $x, $dado->peso);
             $sheet->setCellValue('G' . $x, $dado->valor);
 
-            $i = $i + 1;
+            $i     = $i + 1;
             $total = $total + $dado->valor;
             $x++;
             if ($end == $dado) {
@@ -580,15 +608,15 @@ class RelatoriosControlller extends Controller
 
     public function financeiro_pagar(Request $request)
     {
-        $documento = $request->documento;
-        $categoria = $request->categoria;
+        $documento  = $request->documento;
+        $categoria  = $request->categoria;
         $fornecedor = $request->fornecedor;
-        $vencini = $request->vencini;
-        $vencfin = $request->vencfin;
-        $pgtoini = $request->pgtoini;
-        $pgtofin = $request->pgtofin;
-        $lctoini = $request->lctoini;
-        $lctofin = $request->lctofin;
+        $vencini    = $request->vencini;
+        $vencfin    = $request->vencfin;
+        $pgtoini    = $request->pgtoini;
+        $pgtofin    = $request->pgtofin;
+        $lctoini    = $request->lctoini;
+        $lctofin    = $request->lctofin;
 
         $dados = $this->relatorioRepository->financeiro_pagar($documento, $categoria, $fornecedor, $vencini, $vencfin, $pgtoini, $pgtofin, $lctoini, $lctofin);
         return view('relatorios.financeiro_pagar', compact('dados', 'documento', 'categoria', 'fornecedor', 'vencini', 'vencfin', 'pgtoini', 'pgtofin', 'lctoini', 'lctofin'));
@@ -598,15 +626,15 @@ class RelatoriosControlller extends Controller
     {
         $array = $request->array;
         $array = utf8_encode($array);
-        $dados = json_decode(json_encode ($array));
-        dd($dados , $array);
+        $dados = json_decode(json_encode($array));
+        dd($dados, $array);
 
         foreach ($dados as $i) {
             echo $i;
         }
 
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $sheet       = $spreadsheet->getActiveSheet();
 
         foreach (range('A', 'G') as $columnID) {
             $spreadsheet->getActiveSheet()->getColumnDimension($columnID)->setAutoSize(true);
@@ -615,14 +643,14 @@ class RelatoriosControlller extends Controller
         $sheet->setCellValue('A' . $x, "Data");
 
         $x++;
-        $i = 1;
-        $end = end($dados);
+        $i     = 1;
+        $end   = end($dados);
         $total = 0;
         foreach ($dados as $dado) {
 
             $sheet->setCellValue('A' . $x, date('d/m/Y', strtotime($dado->data)));
 
-            $i = $i + 1;
+            $i     = $i + 1;
             $total = $total + $dado->valor;
             $x++;
             if ($end == $dado) {
@@ -643,15 +671,15 @@ class RelatoriosControlller extends Controller
 
     public function financeiro_receber(Request $request)
     {
-        $documento = $request->documento;
-        $categoria = $request->categoria;
+        $documento  = $request->documento;
+        $categoria  = $request->categoria;
         $fornecedor = $request->fornecedor;
-        $vencini = $request->vencini;
-        $vencfin = $request->vencfin;
-        $pgtoini = $request->pgtoini;
-        $pgtofin = $request->pgtofin;
-        $lctoini = $request->lctoini;
-        $lctofin = $request->lctofin;
+        $vencini    = $request->vencini;
+        $vencfin    = $request->vencfin;
+        $pgtoini    = $request->pgtoini;
+        $pgtofin    = $request->pgtofin;
+        $lctoini    = $request->lctoini;
+        $lctofin    = $request->lctofin;
 
         $dados = $this->relatorioRepository->financeiro_receber($documento, $categoria, $fornecedor, $vencini, $vencfin, $pgtoini, $pgtofin, $lctoini, $lctofin);
         return view('relatorios.financeiro_receber', compact('dados', 'documento', 'categoria', 'fornecedor', 'vencini', 'vencfin', 'pgtoini', 'pgtofin', 'lctoini', 'lctofin'));

@@ -9,11 +9,13 @@ use Illuminate\Support\Facades\DB;
 class RelatorioRepository
 {
 
-    public function gmdAnimal($stringAnimais, $stringRacas,$stringLotes, $stringFornecedores,$compraFornecedor)
+    public function gmdAnimal($stringAnimais, $stringRacas,$stringLotes, $stringFornecedores,$comprasFornecedores)
     {
         $animais = '';
         $racas = '';
+        $lotes = '';
         $fornecedores = '';
+        $compras = '';
 
         if ($stringAnimais <> 'Todo$') {
             $animais = 'and animais.id in (' . $stringAnimais . ')';
@@ -31,8 +33,14 @@ class RelatorioRepository
             $fornecedores = 'and fornecedores.id in (' . $stringFornecedores . ')';
         }
 
+        if ($comprasFornecedores <> 'Todo$') {
+            $compras = 'and id_manejo_compra in (' . $comprasFornecedores . ')';
+        }
+
         return DB::select('select pes.animal_id,
                                        animais.brinco,
+                                       animais.id_manejo_compra,
+                                       manejos.data as data_compra,
                                        fornecedores.nome as fornecedor,
                                        racas.nome as raca,
                                        pes.data,
@@ -42,12 +50,14 @@ class RelatorioRepository
                                        pes.peso - (select aux.peso from pesagens as aux where aux.animal_id = pes.animal_id and aux.data =
                                             (select max(sub.data) from pesagens as sub where sub.animal_id = pes.animal_id and sub.data < pes.data group by sub.animal_id))	 as diff_peso
                                     from pesagens as pes
+                                    inner join historicos_lotes on pes.id = id_pesagem
                                  inner join animais on pes.animal_id = animais.id
+                                 left join manejos on manejos.id = animais.id_manejo_compra
                                  left join fornecedores on fornecedores.id = animais.id_fornecedor
                                  left join racas on racas.id = animais.id_raca
-                                 where animais.id_tipobaixa is null and id_manejo_compra = '.$compraFornecedor . '
-                                 ' . $animais . ' ' . $racas . ' ' . $lotes . ' ' . $fornecedores . '
-                                 order by pes.animal_id, pes.data;');
+                                 where animais.id_tipobaixa is null '. $compras . '
+                                 ' . $animais . ' ' . $racas . ' ' . $lotes . ' ' . $fornecedores . ' and origem <> "Compra"
+                                 order by animais.id_manejo_compra,pes.animal_id, pes.data;');
 
     }
 

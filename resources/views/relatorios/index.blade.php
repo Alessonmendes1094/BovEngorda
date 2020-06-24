@@ -62,7 +62,7 @@
                         </div>
                         <div class="input-field col s12">
                             <i class="material-icons prefix">person</i>
-                            <select id="fornecedor" class="forn" name="fornecedores[]" required>
+                            <select id="fornecedor" class="forn" name="fornecedores[]">
                                 <option value="" selected disabled>Escolha os Fornecedores</option>
                                 @foreach($fornecedores as $forncedor)
                                 <option value="{{$forncedor->id}}">{{$forncedor->nome}}</option>
@@ -72,7 +72,7 @@
                         </div>
                         <div class="input-field col s12">
                             <i class="material-icons prefix">pets</i>
-                            <select id="compra_fornecedores" class="compra_fornecedor" name="compra_fornecedor[]" required>
+                            <select id="compra_fornecedores" multiple class="compra_fornecedor" name="compra_fornecedor[]">
                                 <option value="" disabled>Escolha o Lote de Compra</option>
                             </select>
                             <label for="compra_fornecedores">Lotes de Compra</label>
