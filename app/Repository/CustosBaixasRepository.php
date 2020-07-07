@@ -45,14 +45,15 @@ class CustosBaixasRepository
         $lastHistorico = $compra;
         $total         = 0;
         $valor_total   = 0;
-
+        
         foreach ($pesagens as $pesagem) {
+            if($lastHistorico <> null){
             $diferenca = strtotime($pesagem->data) - strtotime($lastHistorico->data);
             $qtdDias   = floor($diferenca / (60 * 60 * 24));
             //$qtdDias = $qtdDias == 0 ? 1 : $qtdDias;
             $total       = ($lastHistorico->valorkg * $lastHistorico->consumodia) * $qtdDias;
             $valor_total = $valor_total + $total;
-
+            }
             $lastHistorico = $pesagem;
         }
 
@@ -67,13 +68,13 @@ class CustosBaixasRepository
             ->get();
 
             #total de custos+alimentação+valor de compra
-        $total_custos = $valor_custos + $valor_total + $compra->valor;
+        $total_custos = $valor_custos + $valor_total + isset($compra->valor);
 
         #inclusão de custo
         $custo              = new Custo();
         $custo->tipo        = 'Baixas';
         $custo->titulo      = 'Baixa animal ' . $animal_concatenar->brinco;
-        $custo->descricao   = 'Animal "' . $animal_concatenar->nome . '" baixado com um custo total de R$' . $total_custos . '. Sendo estes referente a R$ ' . $compra->valor . ' de compra, R$' . $valor_total . ' de alimentação, e R$' . $valor_custos . ' de outros custos agregados.';
+        $custo->descricao   = 'Animal "' . $animal_concatenar->nome . '" baixado com um custo total de R$' . $total_custos . '. Sendo estes referente a R$ ' . isset($compra->valor) . ' de compra, R$' . $valor_total . ' de alimentação, e R$' . $valor_custos . ' de outros custos agregados.';
         $custo->valor_total = $total_custos;
         $custo->data        = $request->data;
         $custo->save();

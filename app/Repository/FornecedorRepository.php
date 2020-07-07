@@ -5,6 +5,7 @@ namespace App\Repository;
 
 
 use App\Fornecedor;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class FornecedorRepository
@@ -48,7 +49,13 @@ class FornecedorRepository
 
     public function deleteById($id)
     {
-        Fornecedor::destroy($id);
+        try{
+            DB::table('fornecedores')->where('id','=',$id)->delete();
+        }catch(\Illuminate\Database\QueryException  $e){
+            $message[0] = 'erro';
+            $message[1] = 'Fornecedor Vinculado a outro lançamento';
+            return $message;
+        }
     }
 
     public function findWithOutPaginate()

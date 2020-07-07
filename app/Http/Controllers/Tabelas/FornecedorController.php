@@ -37,8 +37,8 @@ class FornecedorController extends Controller
     }
 
     public function delete($id){
-        $this->fornecedorRepository->deleteById($id);
-        session()->flash('status', 'Fornecedor Apagado');
+        $message = $this->fornecedorRepository->deleteById($id);
+        session()->flash($message[0], $message[1]);
         return redirect()->route('fornecedor.index');
     }
 }

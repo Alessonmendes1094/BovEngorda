@@ -184,7 +184,6 @@
                             <label for="compra_fornecedores_3">Lotes de Compra</label>
                         </div>
                         <div class="col s12 right">
-                            <button type="button" onclick="addOption('teste')">Insert option</button>
                             <button type="submit" class="btn green right">Gerar Relatório</button>
                         </div>
                     </form>

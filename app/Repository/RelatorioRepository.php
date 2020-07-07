@@ -1,39 +1,37 @@
 <?php
 
-
 namespace App\Repository;
-
 
 use Illuminate\Support\Facades\DB;
 
 class RelatorioRepository
 {
 
-    public function gmdAnimal($stringAnimais, $stringRacas,$stringLotes, $stringFornecedores,$comprasFornecedores)
+    public function gmdAnimal($stringAnimais, $stringRacas, $stringLotes, $stringFornecedores, $comprasFornecedores)
     {
-        $animais = '';
-        $racas = '';
-        $lotes = '';
+        $animais      = '';
+        $racas        = '';
+        $lotes        = '';
         $fornecedores = '';
-        $compras = '';
+        $compras      = '';
 
-        if ($stringAnimais <> 'Todo$') {
+        if ($stringAnimais != 'Todo$') {
             $animais = 'and animais.id in (' . $stringAnimais . ')';
         }
 
-        if ($stringRacas <> 'Todo$') {
+        if ($stringRacas != 'Todo$') {
             $racas = 'and animais.id_raca in (' . $stringRacas . ')';
         }
 
-        if ($stringLotes <> 'Todo$') {
+        if ($stringLotes != 'Todo$') {
             $lotes = 'and animais.id_lote in (' . $stringLotes . ')';
         }
 
-        if ($stringFornecedores <> 'Todo$') {
+        if ($stringFornecedores != 'Todo$') {
             $fornecedores = 'and fornecedores.id in (' . $stringFornecedores . ')';
         }
 
-        if ($comprasFornecedores <> 'Todo$') {
+        if ($comprasFornecedores != 'Todo$') {
             $compras = 'and id_manejo_compra in (' . $comprasFornecedores . ')';
         }
 
@@ -55,47 +53,50 @@ class RelatorioRepository
                                  left join manejos on manejos.id = animais.id_manejo_compra
                                  left join fornecedores on fornecedores.id = animais.id_fornecedor
                                  left join racas on racas.id = animais.id_raca
-                                 where animais.id_tipobaixa is null '. $compras . '
+                                 where animais.id_tipobaixa is null ' . $compras . '
                                  ' . $animais . ' ' . $racas . ' ' . $lotes . ' ' . $fornecedores . ' and origem <> "Compra"
                                  order by animais.id_manejo_compra,pes.animal_id, pes.data;');
 
     }
 
-    public function gmdAnimalBaixados($stringAnimais, $stringRacas, $stringFornecedores,$compraFornecedor)
+    public function gmdAnimalBaixados($stringAnimais, $stringRacas, $stringFornecedores, $compraFornecedor)
     {
-        $animais = '';
-        $racas = '';
+        $animais      = '';
+        $racas        = '';
         $fornecedores = '';
-        if ($stringAnimais <> 'Todo$') {
+        if ($stringAnimais != 'Todo$') {
             $animais = 'and animais.id in (' . $stringAnimais . ')';
         }
 
-        if ($stringRacas <> 'Todo$') {
+        if ($stringRacas != 'Todo$') {
             $racas = 'and animais.id_raca in (' . $stringRacas . ')';
         }
 
-        if ($stringFornecedores <> 'Todo$') {
+        if ($stringFornecedores != 'Todo$') {
             $fornecedores = 'and fornecedores.id in (' . $stringFornecedores . ')';
         }
 
-
         return DB::select('select pes.animal_id,
-                                       animais.brinco,
-                                       fornecedores.nome as fornecedor,
-                                       racas.nome as raca,
-                                       pes.data,
-                                       pes.peso,
-                                       (select max(sub.data) from pesagens as sub where sub.animal_id = pes.animal_id and sub.data < pes.data group by sub.animal_id) as data_anterior,
-                                       DATEDIFF(pes.data, (select max(sub.data) from pesagens as sub where sub.animal_id = pes.animal_id and sub.data < pes.data group by sub.animal_id)) as dif_dias,
-                                       pes.peso - (select aux.peso from pesagens as aux where aux.animal_id = pes.animal_id and aux.data =
-                                            (select max(sub.data) from pesagens as sub where sub.animal_id = pes.animal_id and sub.data < pes.data group by sub.animal_id))	 as diff_peso
-                                    from pesagens as pes
-                                 inner join animais on pes.animal_id = animais.id
-                                 left join fornecedores on fornecedores.id = animais.id_fornecedor
-                                 left join racas on racas.id = animais.id_raca
-                                 where animais.id_tipobaixa is not null and id_manejo_compra = '. $compraFornecedor.' 
-                                 ' . $animais . ' ' . $racas . ' ' . $fornecedores . '
-                                 order by pes.animal_id, pes.data;');
+                                animais.brinco,
+                                animais.id_manejo_compra,
+                                manejos.data as data_compra,
+                                fornecedores.nome as fornecedor,
+                                racas.nome as raca,
+                                pes.data,
+                                pes.peso,
+                                (select max(sub.data) from pesagens as sub where sub.animal_id = pes.animal_id and sub.data < pes.data group by sub.animal_id) as data_anterior,
+                                DATEDIFF(pes.data, (select max(sub.data) from pesagens as sub where sub.animal_id = pes.animal_id and sub.data < pes.data group by sub.animal_id)) as dif_dias,
+                                pes.peso - (select aux.peso from pesagens as aux where aux.animal_id = pes.animal_id and aux.data =
+                                    (select max(sub.data) from pesagens as sub where sub.animal_id = pes.animal_id and sub.data < pes.data group by sub.animal_id)limit 1)	 as diff_peso
+                            from pesagens as pes
+                                inner join historicos_lotes on pes.id = id_pesagem
+                                inner join animais on pes.animal_id = animais.id
+                                left join manejos on manejos.id = animais.id_manejo_compra
+                                left join fornecedores on fornecedores.id = animais.id_fornecedor
+                                left join racas on racas.id = animais.id_raca
+                            where animais.id_tipobaixa is not null and id_manejo_compra = ' . $compraFornecedor . '
+                            ' . $animais . ' ' . $racas . ' ' . $fornecedores . '
+                            order by pes.animal_id, pes.data;');
 
     }
 
@@ -122,12 +123,12 @@ class RelatorioRepository
 
     }
 
-    public function custo_animal($stringRacas, $stringAnimais, $stringFornecedores,$compraFornecedor)
+    public function custo_animal($stringRacas, $stringAnimais, $stringFornecedores, $compraFornecedor)
     {
         $racas1 = '';
         $racas2 = '';
         $racas3 = '';
-        if ($stringRacas <> 'Todo$') {
+        if ($stringRacas != 'Todo$') {
             $racas1 = 'where anim1.id_raca in (' . $stringRacas . ')';
             $racas2 = 'where anim2.id_raca in (' . $stringRacas . ')';
             $racas3 = 'where animais.id_raca in (' . $stringRacas . ')';
@@ -137,24 +138,23 @@ class RelatorioRepository
         $animais2 = '';
         $animais3 = '';
 
-
         if (strlen($racas1) > 10) {
             $animais1 = 'and';
             $animais2 = 'and';
             $animais3 = 'and';
-        } else if ($stringAnimais <> 'Todo$') {
+        } else if ($stringAnimais != 'Todo$') {
             $animais1 = ' where';
             $animais2 = 'where ';
             $animais3 = 'where ';
         }
 
-        if ($stringAnimais <> 'Todo$') {
+        if ($stringAnimais != 'Todo$') {
             $animais1 = $animais1 . ' manejos_animais.animal_id in (' . $stringAnimais . ')';
             $animais2 = $animais2 . ' pes.animal_id in (' . $stringAnimais . ')';
             $animais3 = $animais3 . ' pesagens.animal_id in (' . $stringAnimais . ')';
         }
 
-        if ($stringFornecedores <> 'Todo$') {
+        if ($stringFornecedores != 'Todo$') {
             $fornecedores = "inner join (SELECT ma.fornecedor_id, man_an.animal_id FROM bovengorda.manejos_animais as man_an
 												inner join manejos as ma on man_an.manejo_id  = ma.id
 												where ma.tipo = 'compra' and ma.fornecedor_id in (" . $stringFornecedores . ")) forn_compra on forn_compra.animal_id = pesagens.animal_id";
@@ -181,19 +181,19 @@ class RelatorioRepository
                                 inner join racas on racas.id = animais.id_raca
                                 ' . $fornecedores . '
                                 ' . $racas3 . ' ' . $animais3 . '
-                                where id_manejo_compra = '.$compraFornecedor.'
+                                where id_manejo_compra = ' . $compraFornecedor . '
                                 order by brinco , data_pesagem, pesagens.id;  ';
 
         return DB::select($consulta);
     }
 
-    public function compras_Animal($stringRacas, $stringAnimais, $stringFornecedores, $dataini , $datafim)
+    public function compras_Animal($stringRacas, $stringAnimais, $stringFornecedores, $dataini, $datafim)
     {
-        $inicio = '';
-        $final = '';
-        $racas = '';
-        $animais = '';
-        $fornecedores ='';
+        $inicio       = '';
+        $final        = '';
+        $racas        = '';
+        $animais      = '';
+        $fornecedores = '';
 
         if (strlen($dataini) > 6) {
             $inicio = 'and manejos.data >=  "' . $dataini . '"';
@@ -202,16 +202,16 @@ class RelatorioRepository
             $final = 'and manejos.data <= "' . $datafim . '"';
         }
 
-        if ($stringRacas <> 'Todo$') {
-            $racas = 'and animais.id_raca in ('.$stringRacas.')';
+        if ($stringRacas != 'Todo$') {
+            $racas = 'and animais.id_raca in (' . $stringRacas . ')';
         }
 
-        if ($stringAnimais <> 'Todo$') {
-            $animais = ' and animais.id_raca in ('.$stringAnimais.')';
+        if ($stringAnimais != 'Todo$') {
+            $animais = ' and animais.id_raca in (' . $stringAnimais . ')';
         }
 
-        if ($stringFornecedores <> 'Todo$') {
-            $fornecedores =' and fornecedores.id in ('.$stringFornecedores.')';
+        if ($stringFornecedores != 'Todo$') {
+            $fornecedores = ' and fornecedores.id in (' . $stringFornecedores . ')';
         }
 
         $consulta = "select manejos.id, manejos.data, tipo , manejos_animais.animal_id , brinco, fornecedores.nome as fornecedor , racas.nome as raca , valorkg , peso , valor   from manejos_animais
@@ -220,7 +220,7 @@ class RelatorioRepository
                         	inner join fornecedores on manejos.fornecedor_id = fornecedores.id
                         	inner join pesagens on pesagens.id = manejos_animais.pesagem_id
                         	inner join racas on racas.id = animais.id_raca
-                        where  tipo = 'compra' ".
+                        where  tipo = 'compra' " .
             $fornecedores . " " .
             $animais . " " .
             $racas . " " .
@@ -231,13 +231,13 @@ class RelatorioRepository
         return DB::select($consulta);
     }
 
-    public function vendas_Animal($stringRacas, $stringAnimais, $stringClientes, $dataini , $datafim)
+    public function vendas_Animal($stringRacas, $stringAnimais, $stringClientes, $dataini, $datafim)
     {
-        $inicio = '';
-        $final = '';
-        $racas = '';
-        $animais = '';
-        $clientes ='';
+        $inicio   = '';
+        $final    = '';
+        $racas    = '';
+        $animais  = '';
+        $clientes = '';
 
         if (strlen($dataini) > 6) {
             $inicio = 'and manejos.data >=  "' . $dataini . '"';
@@ -246,16 +246,16 @@ class RelatorioRepository
             $final = 'and manejos.data <= "' . $datafim . '"';
         }
 
-        if ($stringRacas <> 'Todo$') {
-            $racas = 'and animais.id_raca in ('.$stringRacas.')';
+        if ($stringRacas != 'Todo$') {
+            $racas = 'and animais.id_raca in (' . $stringRacas . ')';
         }
 
-        if ($stringAnimais <> 'Todo$') {
-            $animais = ' and animais.id_raca in ('.$stringAnimais.')';
+        if ($stringAnimais != 'Todo$') {
+            $animais = ' and animais.id_raca in (' . $stringAnimais . ')';
         }
 
-        if ($stringClientes <> 'Todo$') {
-            $clientes =' and clientes.id in ('.$stringClientes.')';
+        if ($stringClientes != 'Todo$') {
+            $clientes = ' and clientes.id in (' . $stringClientes . ')';
         }
 
         $consulta = "select manejos.id, manejos.data, tipo , manejos_animais.animal_id , brinco, clientes.nome as cliente , racas.nome as raca , valorkg , peso , valor   from manejos_animais
@@ -264,7 +264,7 @@ class RelatorioRepository
                         	inner join clientes on manejos.cliente_id = clientes.id
                         	inner join pesagens on pesagens.id = manejos_animais.pesagem_id
                         	inner join racas on racas.id = animais.id_raca
-                        where  tipo = 'venda' ".
+                        where  tipo = 'venda' " .
             $clientes . " " .
             $animais . " " .
             $racas . " " .
@@ -275,17 +275,17 @@ class RelatorioRepository
         return DB::select($consulta);
     }
 
-    public function financeiro_pagar($documento, $categoria, $fornecedor , $vencini , $vencfin ,$pgtoini  ,$pgtofin  ,$lctoini ,$lctofin)
+    public function financeiro_pagar($documento, $categoria, $fornecedor, $vencini, $vencfin, $pgtoini, $pgtofin, $lctoini, $lctofin)
     {
-        $documentox = '';
-        $categoriax = '';
+        $documentox  = '';
+        $categoriax  = '';
         $fornecedorx = '';
-        $vencinix = '';
-        $vencfinx ='';
-        $pgtoinix ='';
-        $pgtofinx ='';
-        $lctoinix ='';
-        $lctofinx ='';
+        $vencinix    = '';
+        $vencfinx    = '';
+        $pgtoinix    = '';
+        $pgtofinx    = '';
+        $lctoinix    = '';
+        $lctofinx    = '';
 
         if (strlen($documento) > 0) {
             $documentox = 'and numero_documento like  "%' . $documento . '%"';
@@ -317,23 +317,23 @@ class RelatorioRepository
 
         $consulta = "select * from operacoes_financeiras
                     where tipo_dc = 'debito' " .
-            $documentox." " . $categoriax . " " . $fornecedorx . " " . $vencinix . " " .
+            $documentox . " " . $categoriax . " " . $fornecedorx . " " . $vencinix . " " .
             $vencfinx . " " . $pgtoinix . " " . $pgtofinx . " " . $lctoinix . " " . $lctofinx .
             " order by fornecedor , categoria, valor";
         return DB::select($consulta);
     }
 
-    public function financeiro_receber($documento, $categoria, $fornecedor , $vencini , $vencfin ,$pgtoini  ,$pgtofin  ,$lctoini ,$lctofin)
+    public function financeiro_receber($documento, $categoria, $fornecedor, $vencini, $vencfin, $pgtoini, $pgtofin, $lctoini, $lctofin)
     {
-        $documentox = '';
-        $categoriax = '';
+        $documentox  = '';
+        $categoriax  = '';
         $fornecedorx = '';
-        $vencinix = '';
-        $vencfinx ='';
-        $pgtoinix ='';
-        $pgtofinx ='';
-        $lctoinix ='';
-        $lctofinx ='';
+        $vencinix    = '';
+        $vencfinx    = '';
+        $pgtoinix    = '';
+        $pgtofinx    = '';
+        $lctoinix    = '';
+        $lctofinx    = '';
 
         if (strlen($documento) > 0) {
             $documentox = 'and numero_documento like  "%' . $documento . '%"';
@@ -365,7 +365,7 @@ class RelatorioRepository
 
         $consulta = "select * from operacoes_financeiras
                     where tipo_dc = 'credito' " .
-            $documentox." " . $categoriax . " " . $fornecedorx . " " . $vencinix . " " .
+            $documentox . " " . $categoriax . " " . $fornecedorx . " " . $vencinix . " " .
             $vencfinx . " " . $pgtoinix . " " . $pgtofinx . " " . $lctoinix . " " . $lctofinx .
             " order by fornecedor , categoria, valor";
         return DB::select($consulta);
