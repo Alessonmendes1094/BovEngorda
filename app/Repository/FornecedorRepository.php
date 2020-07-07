@@ -51,6 +51,9 @@ class FornecedorRepository
     {
         try{
             DB::table('fornecedores')->where('id','=',$id)->delete();
+            $message[0] = 'success';
+            $message[1] = 'Fornecedor Excluído com Sucesso';
+            return $message;
         }catch(\Illuminate\Database\QueryException  $e){
             $message[0] = 'erro';
             $message[1] = 'Fornecedor Vinculado a outro lançamento';
