@@ -3,7 +3,7 @@
 @section('content')
     <div class="row">
         <div class="col s12 ">
-            <div class="card">
+            <div class="card" style="overflow:scroll;overflow:auto">
                 <div class="card-content">
                     <span class="card-title">Compra</span>
                     <form method="POST" action="{{route('compra.save')}}">

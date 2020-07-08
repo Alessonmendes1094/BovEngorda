@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col s12 m3"></div>
         <div class="col s12 m6">
-            <div class="card">
+            <div class="card" style="overflow:scroll;overflow:auto">
                 <div class="card-content">
                     <span class="card-title">Carregar Dados</span>
                     <div class="row">

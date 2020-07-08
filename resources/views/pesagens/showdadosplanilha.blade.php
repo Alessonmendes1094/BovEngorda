@@ -3,7 +3,7 @@
 @section('content')
     <div class="row ">
         <div class="col s12 m5">
-            <div class="card">
+            <div class="card" style="overflow:scroll;overflow:auto">
                 <div class="card-content">
                     <span class="card-title">Dados da Tabela</span>
                     <div class="row">
@@ -68,7 +68,7 @@
             </div>
         </div>
         <div class="col s12 m7">
-            <div class="card">
+            <div class="card" style="overflow:scroll;overflow:auto">
                 <div class="card-content">
                     <span class="card-title">Dados da Tabela</span>
                     <div class="row">

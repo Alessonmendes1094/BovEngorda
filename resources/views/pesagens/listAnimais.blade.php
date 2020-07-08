@@ -3,7 +3,7 @@
 @section('content')
     <div class="row">
         <div class="col s12 l3">
-            <div class="card">
+            <div class="card" style="overflow:scroll;overflow:auto">
                 <div class="card-content">
                     <span class="card-title">Filtro</span>
                     <form method="GET" action="{{route('pesagem.listAnimais')}}">
@@ -54,7 +54,7 @@
             </div>
         </div>
         <div class="col s12 l9">
-            <div class="card">
+            <div class="card" style="overflow:scroll;overflow:auto">
                 <form action="{{route('pesagem.listAnimaisRequest')}}" method="POST">
                     @csrf
                     <div class="card-content">

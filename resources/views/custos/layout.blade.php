@@ -3,7 +3,7 @@
 @section('content')
     <div class="row">
         <div class="col s12 l3">
-            <div class="card">
+            <div class="card" style="overflow:scroll;overflow:auto">
                 <div class="card-content">
                     <h6>Menu</h6>
                     <div class="collection">

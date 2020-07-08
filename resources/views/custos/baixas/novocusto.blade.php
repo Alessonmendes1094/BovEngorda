@@ -3,7 +3,7 @@
 @section('content_tabela')
     <div class="row">
         <div class="col s12">
-            <div class="card">
+            <div class="card" style="overflow:scroll;overflow:auto">
                 <div class="card-content">
                     <span class="card-title">Novo Custo Com Baixas</span>
                     <p>A baixa do animal, somará todo o custo gasto com ele ate a presente data e dividirá entre <b>todos os animais</b> comprados no mesmo lote</p>

@@ -3,7 +3,7 @@
 @section('content')
     <div class="row">
         <div class="col s12 l6">
-            <div class="card">
+            <div class="card" style="overflow:scroll;overflow:auto">
                 <div class="card-content">
                     <span class="card-title">Cadastro de peso Animal</span>
                     <div class="row">
